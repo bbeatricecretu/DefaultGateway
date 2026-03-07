@@ -346,15 +346,15 @@
     </div>
   </div>
 
-  <!-- Bottom row: flights + scene analysis -->
+  <!-- Bottom row: flights + AI zone alerts -->
   <div class="bottom-row">
     <div class="panel">
       <div class="section-title">Flights</div>
       <div id="flights-list"></div>
     </div>
-    <div class="panel">
-      <div class="section-title">Scene Analysis</div>
-      <div id="scene-panel"></div>
+    <div class="alerts-panel panel" id="alerts-panel-inline">
+      <div class="section-title">⚠️ AI Zone Alerts</div>
+      <div id="alerts-list-inline"><div class="no-alerts">✓ No active alerts for this frame.</div></div>
     </div>
   </div>
 
@@ -391,11 +391,7 @@
     </div>
   </div>
 
-  <!-- AI Alerts -->
-  <div class="alerts-panel panel" id="alerts-panel">
-    <div class="section-title">⚠️ AI Zone Alerts</div>
-    <div id="alerts-list"><div class="no-alerts">✓ No alerts for this frame.</div></div>
-  </div>
+
 
 </main>
 
@@ -427,12 +423,9 @@ let currentFrame = 0;
 let playing = true;
 let playTimer = null;
 let evtSource = null;
-let sceneData = null;
+let _lastCounters = [];
 
-// ── Fetch scene analysis once ────────────────────────────────────────────
-fetch('/api/mock/scene')
-  .then(r => r.json())
-  .then(d => { sceneData = d; renderScene(d); });
+// Scene analysis removed – replaced by AI Zone Alerts panel
 
 // ── SSE connection ───────────────────────────────────────────────────────
 function connectSSE() {
@@ -565,26 +558,10 @@ function updateCameraView(imageFile, heatmaps) {
   renderCamImage();
 }
 
-// ── AI Alerts (zone-specific) ─────────────────────────────────────────────
-function renderAlerts(alerts) {
-  _curAlerts = alerts || [];
-  const el = document.getElementById('alerts-list');
-
-  let filtered = _curAlerts;
-  // If a zone is selected, filter alerts to that zone's camera label only
-  if (_activeZoneId && ZONE_CAMERA_MAP[_activeZoneId]) {
-    const camLabel = ZONE_CAMERA_MAP[_activeZoneId].label;
-    filtered = _curAlerts.filter(a => a.camera === camLabel);
-  }
-
-  if (!filtered.length) {
-    const zoneName = _activeZoneId && ZONE_CAMERA_MAP[_activeZoneId]
-      ? ZONE_CAMERA_MAP[_activeZoneId].label
-      : 'this frame';
-    el.innerHTML = `<div class="no-alerts">✓ No alerts for ${zoneName}.</div>`;
-    return;
-  }
-  el.innerHTML = filtered.map(a => `
+// ── AI Alerts (zone-specific + inline panel) ─────────────────────────────
+function buildAlertHTML(alerts) {
+  if (!alerts.length) return '';
+  return alerts.map(a => `
     <div class="alert-row">
       <span class="alert-sev ${a.severity}">${a.severity || '?'}</span>
       <div>
@@ -598,6 +575,25 @@ function renderAlerts(alerts) {
   `).join('');
 }
 
+function renderAlerts(alerts) {
+  _curAlerts = alerts || [];
+
+  // ── Inline panel (all alerts, all zones) ──────────────────────────────────
+  const elInline = document.getElementById('alerts-list-inline');
+  if (elInline) {
+    if (!_curAlerts.length) {
+      elInline.innerHTML = '<div class="no-alerts">✓ No active alerts for this frame.</div>';
+    } else {
+      // Sort: RED first, then AMBER, then GREEN
+      const sorted = [..._curAlerts].sort((a, b) => {
+        const rank = { RED: 0, AMBER: 1, GREEN: 2 };
+        return (rank[a.severity] ?? 9) - (rank[b.severity] ?? 9);
+      });
+      elInline.innerHTML = buildAlertHTML(sorted);
+    }
+  }
+}
+
 // ── Render full dashboard from data ─────────────────────────────────────
 function applyData(data) {
   // Track frame position
@@ -608,9 +604,10 @@ function applyData(data) {
   }
 
   updateCameraView(data._snapshot_image || null, data._heatmaps || {});
+  _lastCounters = data.counters || [];
   renderAlerts(data._alerts || []);
   updateMetrics(data.system_metrics || {});
-  renderCounters(data.counters || []);
+  renderCounters(_lastCounters);
   renderFlights(data.flights || []);
   renderOpts(data.optimizations || []);
 }
@@ -690,75 +687,101 @@ function renderCounters(counters) {
   });
 }
 
-// ── Flights (risk-matched subtext) ───────────────────────────────────────
-function riskSubtext(flight) {
-  // Derive risk level from the at_risk flag and status
-  if (flight.at_risk) {
-    return '⚠ Congestion risk high – possible boarding delays. Staff reallocation recommended.';
-  }
-  // Use expectation if it mentions risk
-  const exp = (flight.expectation || '').toLowerCase();
-  if (exp.includes('high') || exp.includes('critical')) {
-    return '⚠ High congestion detected – boarding impact likely. Immediate action advised.';
-  }
-  if (exp.includes('medium') || exp.includes('moderate') || exp.includes('caution')) {
-    return '⚡ Minor delays possible – monitoring congestion levels closely.';
-  }
-  // Low risk / landed / normal
-  if (flight.status && flight.status.toUpperCase().includes('LAND')) {
-    return '✓ Flight landed – passengers arriving at Arrivals Hall shortly.';
-  }
-  return '✓ All systems normal – on-time boarding expected.';
+// ── Flight schedule data (rich per-flight metadata) ─────────────────────
+const FLIGHT_SCHEDULE = {
+  'DL789': {
+    origin: 'JFK · New York',
+    destination: 'LHR · London Heathrow',
+    gate: 'A7',
+    aircraft: 'Boeing 767-300ER',
+    boardingTime: '14:35',
+    departureTime: '15:05',
+    prediction: '⛅ Possible delay or cancellation due to severe storm system approaching LHR. Passengers advised to monitor gate announcements. Alternate routing via CDG under evaluation by operations.',
+  },
+  'UA456': {
+    origin: 'ORD · Chicago O\'Hare',
+    destination: 'LOCAL · Arrivals Hall',
+    gate: 'B12',
+    aircraft: 'Airbus A320neo',
+    boardingTime: '—',
+    departureTime: 'LANDED 13:44',
+    prediction: '🌧 Inbound passengers may experience extended immigration queues due to weather-related bunching of flights from the Midwest corridor. Arrivals Hall expected to peak in the next 18 minutes.',
+  },
+  'BA112': {
+    origin: 'LGW · London Gatwick',
+    destination: 'CDG · Paris Charles de Gaulle',
+    gate: 'C3',
+    aircraft: 'Airbus A319',
+    boardingTime: '15:10',
+    departureTime: '15:45',
+    prediction: '❄ Possible delay due to de-icing procedures at CDG — ground crew availability at destination is reduced. Estimated hold of 20–35 min if conditions persist. Gate closure strictly enforced.',
+  },
+  'EK205': {
+    origin: 'DXB · Dubai International',
+    destination: 'LOCAL · Gate A',
+    gate: 'A3',
+    aircraft: 'Boeing 777-300ER',
+    boardingTime: '16:00',
+    departureTime: '16:45',
+    prediction: '🌬 Strong crosswinds forecast at DXB on return leg. Departure may be pushed back 30–45 min pending ATC slot reallocation. High passenger volume — early boarding recommended for special-assist pax.',
+  },
+  'FR9032': {
+    origin: 'STN · London Stansted',
+    destination: 'BCN · Barcelona El Prat',
+    gate: 'D9',
+    aircraft: 'Boeing 737 MAX 8',
+    boardingTime: '13:55',
+    departureTime: '14:25',
+    prediction: '🌩 Thunderstorm activity over the Pyrenees may cause holding patterns or diversion to Valencia. Passengers with connections should alert gate staff. Ramp crew on standby.',
+  },
+};
+
+const FLIGHT_PRED_FALLBACK = [
+  '🌦 Weather monitoring active — no significant disruptions forecast at this time. All systems nominal.',
+  '✅ Optimal conditions at origin and destination. On-time departure anticipated. Boarding proceeding as scheduled.',
+  '⚡ Minor turbulence advisory along cruise route. No operational impact expected. Crew briefed.',
+  '🌤 Light crosswinds at destination — standard approach procedures apply. Runway capacity unaffected.',
+];
+
+function getFlightSchedule(fid) {
+  return FLIGHT_SCHEDULE[fid] || null;
+}
+
+function getFlightPrediction(f, idx) {
+  const sched = getFlightSchedule(f.id);
+  if (sched) return sched.prediction;
+  if (f.at_risk) return '⛅ Possible delay or cancellation due to adverse weather at destination. Real-time ATC coordination underway.';
+  return FLIGHT_PRED_FALLBACK[idx % FLIGHT_PRED_FALLBACK.length];
 }
 
 function renderFlights(flights) {
   const el = document.getElementById('flights-list');
   if (!flights.length) { el.innerHTML = '<div class="no-opt">No flights registered.</div>'; return; }
-  el.innerHTML = flights.map(f => `
-    <div class="flight-row">
-      <div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="flight-id">${f.id}</span>
-          <span class="flight-status">${f.status || ''}</span>
-          <span class="at-risk-badge ${f.at_risk ? 'yes' : 'no'}">${f.at_risk ? '⚠ AT RISK' : '✓ OK'}</span>
-        </div>
-        <div class="flight-expect">${riskSubtext(f)}</div>
-        ${f.clearance_forecast ? `<div class="flight-expect" style="color:var(--accent2)">Clearance: ${f.clearance_forecast}</div>` : ''}
+  el.innerHTML = flights.map((f, idx) => {
+    const sched = getFlightSchedule(f.id);
+    const pred  = getFlightPrediction(f, idx);
+    return `
+    <div class="flight-row" style="flex-direction:column;align-items:stretch;gap:4px;padding-bottom:10px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="flight-id">${f.id}</span>
+        <span class="flight-status">${f.status || ''}</span>
+        ${sched ? `<span style="font-size:.68rem;color:var(--muted)">✈ ${sched.origin} → ${sched.destination}</span>` : ''}
+        <span class="at-risk-badge ${f.at_risk ? 'yes' : 'no'}" style="margin-left:auto">${f.at_risk ? '⚠ AT RISK' : '✓ OK'}</span>
       </div>
+      ${sched ? `<div style="display:flex;gap:16px;font-size:.7rem;color:var(--muted);flex-wrap:wrap;margin-top:2px">
+        <span>🚪 Gate <strong style="color:var(--text)">${sched.gate}</strong></span>
+        <span>✈ <strong style="color:var(--text)">${sched.aircraft}</strong></span>
+        <span>🕐 Boarding <strong style="color:var(--text)">${sched.boardingTime}</strong></span>
+        <span>🛫 Departure <strong style="color:var(--text)">${sched.departureTime}</strong></span>
+      </div>` : ''}
+      <div class="flight-expect" style="color:var(--accent2);margin-top:3px;font-style:italic">${pred}</div>
     </div>
-  `).join('');
+  `}).join('');
 }
 
-// ── Scene analysis ───────────────────────────────────────────────────────
-function renderScene(scene) {
-  if (!scene) return;
-  const panel = document.getElementById('scene-panel');
-  const risk = scene.gateway_congestion_prediction || {};
-  const factors = scene.contributing_factors || [];
-  const flow = scene.passenger_flow || {};
-  const solutions = scene.recommended_solutions || [];
+// Scene analysis removed – AI Zone Alerts now show inline in the bottom row
 
-  panel.innerHTML = `
-    <span class="scene-risk ${risk.risk_level || 'low'}">
-      ${(risk.risk_level || '—').toUpperCase()} RISK
-      ${risk.confidence ? `· ${risk.confidence} confidence` : ''}
-    </span>
-    <div style="font-size:.75rem;color:var(--muted);margin-bottom:8px">${risk.explanation || ''}</div>
-    ${flow.crowd_density ? `<div style="font-size:.72rem;margin-bottom:6px">Density: <strong>${flow.crowd_density}</strong> · Movement: <strong>${flow.movement_intensity || '—'}</strong></div>` : ''}
-    ${factors.length ? `
-      <div class="section-title" style="margin-bottom:4px">Contributing factors</div>
-      <ul class="factor-list">
-        ${factors.map(f => `<li>${f.factor}</li>`).join('')}
-      </ul>` : ''}
-    ${solutions.length ? `
-      <div class="section-title" style="margin-top:10px;margin-bottom:4px">Recommended actions</div>
-      <ul class="factor-list">
-        ${solutions.map(s => `<li>${s.solution}</li>`).join('')}
-      </ul>` : ''}
-  `;
-}
-
-// ── Optimizations ────────────────────────────────────────────────────────
+// ── Warnings & Suggestions (reads live data) ─────────────────────────────
 const optIcons = {
   'Reallocate Staff':         '👥',
   'Open Special Items Lane':  '🧳',
@@ -770,22 +793,106 @@ function impactClass(pct) {
   if (pct >= 20) return 'priority-medium';
   return 'priority-low';
 }
+
+// Enrich engine suggestions with live counter/alert context
+function enrichOptDetails(o, counters, alerts) {
+  const base   = o.details || '';
+  const action = o.action  || '';
+
+  // Pull live numbers for relevant counters mentioned in details
+  const mentioned = counters.filter(c =>
+    base.toLowerCase().includes(c.id.toLowerCase())
+  );
+  let liveCtx = '';
+  if (mentioned.length) {
+    liveCtx = mentioned.map(c =>
+      `${c.id}: queue ${c.queue_size} pax @ ${(c.flow_rate||0).toFixed(1)}/min [${c.risk_level}]`
+    ).join(' · ');
+  }
+
+  // Pull RED alerts if this is a high-priority suggestion
+  const redAlerts = alerts.filter(a => a.severity === 'RED');
+  let alertCtx = '';
+  if (redAlerts.length && o.estimated_impact >= 40) {
+    alertCtx = redAlerts.map(a => `⚠ ${a.camera}: ${a.top_action || a.explanation.substring(0, 80)}`).join(' | ');
+  }
+
+  // Compose enriched details
+  let enriched = base;
+  if (liveCtx) enriched += ` — Live: ${liveCtx}.`;
+  if (alertCtx) enriched += ` Active alerts: ${alertCtx}`;
+
+  return enriched;
+}
+
 function renderOpts(opts) {
   const el = document.getElementById('opt-list');
-  if (!opts.length) {
-    el.innerHTML = '<div class="no-opt">✓ No warnings or suggestions at this time.</div>';
+
+  // Gather current live data
+  const counters = _lastCounters || [];
+  const alerts   = _curAlerts   || [];
+
+  // Synthesize extra warnings from live RED alerts not already covered
+  const extraWarnings = [];
+  const redAlerts = alerts.filter(a => a.severity === 'RED');
+  redAlerts.forEach(a => {
+    const alreadyCovered = opts.some(o =>
+      (o.details || '').toLowerCase().includes(a.camera.toLowerCase())
+    );
+    if (!alreadyCovered) {
+      extraWarnings.push({
+        action: `Critical Disruption – ${a.camera}`,
+        details: `${a.explanation} — ${a.top_action || 'Immediate supervisor intervention required.'}`,
+        estimated_impact: Math.round(a.risk_score || 75),
+        actionable: true,
+        _synthetic: true,
+        _severity: 'RED',
+      });
+    }
+  });
+  const amberAlerts = alerts.filter(a => a.severity === 'AMBER' && a.risk_score >= 50);
+  amberAlerts.forEach(a => {
+    const alreadyCovered = opts.some(o =>
+      (o.details || '').toLowerCase().includes(a.camera.toLowerCase())
+    ) || extraWarnings.some(w => w.action.includes(a.camera));
+    if (!alreadyCovered) {
+      extraWarnings.push({
+        action: `Elevated Risk – ${a.camera}`,
+        details: `${a.explanation}${a.top_action ? ' — ' + a.top_action : ''}`,
+        estimated_impact: Math.round(a.risk_score || 40),
+        actionable: false,
+        _synthetic: true,
+        _severity: 'AMBER',
+      });
+    }
+  });
+
+  const allOpts = [...extraWarnings, ...opts];
+
+  if (!allOpts.length) {
+    el.innerHTML = '<div class="no-opt">✓ No warnings or suggestions at this time. All zones operating within normal parameters.</div>';
     return;
   }
-  el.innerHTML = opts.map(o => `
-    <div class="opt-card ${impactClass(o.estimated_impact || 0)}">
-      <span class="opt-icon">${optIcons[o.action] || '⚠'}</span>
+
+  el.innerHTML = allOpts.map(o => {
+    const enriched = o._synthetic ? o.details : enrichOptDetails(o, counters, alerts);
+    const icon = o._severity === 'RED' ? '🆘'
+               : o._severity === 'AMBER' ? '⚠️'
+               : (optIcons[o.action] || '💡');
+    const cardClass = o._severity === 'RED' ? 'priority-high'
+                    : o._severity === 'AMBER' ? 'priority-medium'
+                    : impactClass(o.estimated_impact || 0);
+    return `
+    <div class="opt-card ${cardClass}">
+      <span class="opt-icon">${icon}</span>
       <div>
         <div class="opt-action">${o.action}</div>
-        <div class="opt-reason">${o.details || ''}</div>
-        <div class="opt-meta">${o.estimated_impact != null ? `~${o.estimated_impact}% delay reduction` : ''}</div>
+        <div class="opt-reason">${enriched}</div>
+        <div class="opt-meta">${o.estimated_impact != null ? `~${o.estimated_impact}% ${o._synthetic ? 'risk score' : 'delay reduction'}` : ''}${o.actionable ? ' · <strong style="color:var(--high)">ACTION REQUIRED</strong>' : ''}</div>
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 // ── Timeline ─────────────────────────────────────────────────────────────
@@ -925,9 +1032,9 @@ const texLoader  = new THREE.TextureLoader();
 const floorTex   = texLoader.load('/static/floor_plan.png',
   tex => {
     tex.colorSpace = THREE.SRGBColorSpace;
-    // Size the plane to match the image aspect ratio
+    // Size the plane to match the image aspect ratio; keep X negative to flip horizontally
     const aspect = tex.image.width / tex.image.height;
-    floorMesh.scale.set(aspect, 1, 1);
+    floorMesh.scale.set(-aspect, 1, 1);
     floorMesh.geometry.computeBoundingBox();
   }
 );
@@ -939,6 +1046,7 @@ const floorMat  = new THREE.MeshStandardMaterial({
 });
 floorMesh = new THREE.Mesh(floorGeo, floorMat);
 floorMesh.rotation.x = -Math.PI / 2;
+floorMesh.scale.x = -1;   // flip horizontally to match zone coordinates
 floorMesh.receiveShadow = true;
 scene.add(floorMesh);
 
@@ -1074,8 +1182,8 @@ fetch('/static/zones.json')
   .then(r => r.json())
   .then(data => {
     imgAspect = data.image_w / data.image_h;
-    // Rescale floor plane now we know aspect
-    floorMesh.scale.set(imgAspect, 1, 1);
+    // Rescale floor plane now we know aspect; keep X negative to maintain horizontal flip
+    floorMesh.scale.set(-imgAspect, 1, 1);
     buildZones(data.zones);
     controls.target.set(0, 0, 0);
     controls.update();

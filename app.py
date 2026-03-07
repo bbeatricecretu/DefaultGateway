@@ -89,23 +89,13 @@ def _build_engine() -> Engine:
         engine.add_counter(Counter(counter_id=cam, counter_type=cam_type))
 
     # ---- Flights ------------------------------------------------------------
-    # Scene-level risk / recommendations from the AI analysis are used to
-    # populate the expectation field so suggestions are grounded in real data.
-    _scene = mock_snapshot4.get_scene_analysis()
-    _risk  = _scene.get("gateway_congestion_prediction", {})
-    _solutions = _scene.get("recommended_solutions", [])
-    _solution_text = "; ".join(
-        s.get("solution", "") for s in _solutions[:2]
-    ) if _solutions else "monitor closely"
-
     dl789 = Flight(
         flight_id="DL789",
         status="DEPARTS 45M",
         minutes_to_departure=45.0,
         expectation=(
-            f"Scene risk: {_risk.get('risk_level', 'unknown')} "
-            f"(confidence: {_risk.get('confidence', 'unknown')}). "
-            f"Suggested actions: {_solution_text}."
+            "JFK→LHR via Gate A7. Boeing 767-300ER. "
+            "Storm system approaching LHR — possible delay or cancellation."
         ),
     )
     ua456 = Flight(
@@ -113,12 +103,42 @@ def _build_engine() -> Engine:
         status="LANDED",
         minutes_to_departure=None,
         expectation=(
-            "Inbound UA456 passengers expected to join Arrivals Hall queue "
-            "in approximately 20 minutes."
+            "ORD inbound. Passengers arriving at Arrivals Hall — "
+            "weather-related bunching expected; queue to peak in ~18 min."
+        ),
+    )
+    ba112 = Flight(
+        flight_id="BA112",
+        status="DEPARTS 65M",
+        minutes_to_departure=65.0,
+        expectation=(
+            "LGW→CDG via Gate C3. Airbus A319. "
+            "De-icing delays at CDG — possible hold of 20–35 min."
+        ),
+    )
+    ek205 = Flight(
+        flight_id="EK205",
+        status="DEPARTS 105M",
+        minutes_to_departure=105.0,
+        expectation=(
+            "DXB inbound/outbound via Gate A3. Boeing 777-300ER. "
+            "Strong crosswinds forecast — departure may push 30–45 min."
+        ),
+    )
+    fr9032 = Flight(
+        flight_id="FR9032",
+        status="DEPARTS 25M",
+        minutes_to_departure=25.0,
+        expectation=(
+            "STN→BCN via Gate D9. Boeing 737 MAX 8. "
+            "Thunderstorm over Pyrenees — diversion to Valencia possible."
         ),
     )
     engine.add_flight(dl789)
     engine.add_flight(ua456)
+    engine.add_flight(ba112)
+    engine.add_flight(ek205)
+    engine.add_flight(fr9032)
 
     # ---- Schedule -----------------------------------------------------------
     now = datetime.now()
@@ -138,6 +158,30 @@ def _build_engine() -> Engine:
         counter_ids=["Arrivals Hall"],
         start_time=now - timedelta(hours=5),
         end_time=now - timedelta(hours=1),
+    )
+
+    # BA112: check-in open, departs in 65 min → ACTIVE
+    scheduler.register(
+        flight_id="BA112",
+        counter_ids=["Departures"],
+        start_time=now - timedelta(hours=1),
+        end_time=now + timedelta(minutes=50),
+    )
+
+    # EK205: check-in open, departs in 105 min → ACTIVE
+    scheduler.register(
+        flight_id="EK205",
+        counter_ids=["Gate A"],
+        start_time=now - timedelta(minutes=30),
+        end_time=now + timedelta(minutes=90),
+    )
+
+    # FR9032: check-in closing soon, departs in 25 min → ACTIVE (urgent)
+    scheduler.register(
+        flight_id="FR9032",
+        counter_ids=["Departures", "Security"],
+        start_time=now - timedelta(hours=3),
+        end_time=now + timedelta(minutes=10),
     )
 
     engine.set_scheduler(scheduler)
