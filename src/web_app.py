@@ -1,5 +1,6 @@
 import cv2
 import json
+import os
 import threading
 import uuid
 from flask import Flask, render_template, Response, jsonify
@@ -8,12 +9,18 @@ from db_handler import AirportDatabase
 
 app = Flask(__name__)
 
+# Resolve paths relative to this file so the app works regardless of
+# the working directory it is launched from.
+_SRC_DIR     = os.path.dirname(os.path.abspath(__file__))
+_PROJECT_DIR = os.path.dirname(_SRC_DIR)
+
 # Încărcăm configurația
-with open('/Users/vlad/Desktop/DefaultGateway/config_camere.json', 'r') as f:
+_CONFIG_PATH = os.path.join(_PROJECT_DIR, 'config_camere.json')
+with open(_CONFIG_PATH, 'r') as f:
     config = json.load(f)
 
 # Baza de date centrală
-db = AirportDatabase("../airport.db")
+db = AirportDatabase(os.path.join(_PROJECT_DIR, "airport.db"))
 
 # Dicționar pentru a stoca cadrele cele mai recente din fiecare cameră
 # Astfel interfața web preia mereu ultimul frame procesat, fără lag

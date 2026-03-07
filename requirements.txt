@@ -1,0 +1,20 @@
+# -----------------------------------------------------------------------
+# AeroVision – Python dependencies
+# Install with:  pip install -r requirements.txt
+# -----------------------------------------------------------------------
+
+# --- Web / API ----------------------------------------------------------
+flask>=3.0
+flask-cors>=4.0
+
+# --- Data / numerics ----------------------------------------------------
+numpy>=1.26
+scipy>=1.12
+
+# --- Computer vision & ML (src/ MTMCT system) --------------------------
+opencv-python>=4.9
+torch>=2.2
+torchvision>=0.17
+Pillow>=10.2
+ultralytics>=8.1          # YOLOv8 object detection + tracking
+facenet-pytorch>=2.6.0    # MTCNN face detection + InceptionResnetV1 embeddings
