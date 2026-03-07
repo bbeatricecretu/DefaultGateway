@@ -1,0 +1,7 @@
+Place camera images for Security Points (S1-S4) here.
+
+Expected filenames:
+  heatmap 1.jpg   — heatmap overlay from the security camera
+  normal 1.jpg    — normal camera view of the security area
+
+You can add more pairs: heatmap 2.jpg / normal 2.jpg, etc.

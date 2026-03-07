@@ -76,7 +76,7 @@ COUNTER_TYPES: Dict[str, str] = {
 # Internal helpers
 # ---------------------------------------------------------------------------
 
-def _load_kpis() -> List[Dict[str, Dict[str, Any]]]:
+def _load_kpis() -> Tuple[List[Dict[str, Dict[str, Any]]], List[Optional[str]]]:
     """
     Parse kpis.jsonl into frames keyed by (snapshot_num, timestamp_s).
 
@@ -85,9 +85,21 @@ def _load_kpis() -> List[Dict[str, Dict[str, Any]]]:
     of collapsing them to 15 by snapshot_num alone.
 
     Returns:
-        List of counter-keyed payload dicts, ordered by
-        (snapshot_num, timestamp_s).
+        Tuple of (frames, image_filenames), both ordered by
+        (snapshot_num, timestamp_s).  image_filenames[i] is the
+        corresponding JPG basename or None if no file found.
     """
+    # Build snapshot_num → JPG filename for the 211 (21:10) session
+    snap_images: Dict[int, str] = {}
+    for fpath in glob.glob(os.path.join(_DATA_DIR, "*211*_????.jpg")):
+        bn = os.path.basename(fpath)
+        parts = bn.replace(".jpg", "").split("_")
+        if len(parts) >= 4:
+            try:
+                snap_images[int(parts[3])] = bn
+            except (ValueError, IndexError):
+                pass
+
     groups: Dict[Tuple[int, float], Dict[str, Dict[str, Any]]] = {}
 
     with open(_KPIS_PATH, "r") as fh:
@@ -119,14 +131,16 @@ def _load_kpis() -> List[Dict[str, Dict[str, Any]]]:
                 "special_items": int(rec.get("total_specials", 0)),
             }
 
-    return [
-        groups[k]
-        for k in sorted(groups.keys())
+    sorted_keys = [
+        k for k in sorted(groups.keys())
         if COUNTER_CAMERAS.issubset(groups[k].keys())
     ]
+    frames = [groups[k] for k in sorted_keys]
+    images: List[Optional[str]] = [snap_images.get(k[0]) for k in sorted_keys]
+    return frames, images
 
 
-def _load_csv_frames() -> List[Dict[str, Dict[str, Any]]]:
+def _load_csv_frames() -> Tuple[List[Dict[str, Dict[str, Any]]], List[Optional[str]]]:
     """
     Derive payload frames from detection CSVs for sessions that pre-date
     kpis.jsonl (16:42, 17:55, 20:42 sessions – 20 files).
@@ -137,6 +151,10 @@ def _load_csv_frames() -> List[Dict[str, Dict[str, Any]]]:
                    queue_size * 0.5 pax/min (clamped >= 0.1)
     avg_baggage  = bag count / max(person count, 1)
     special_items = rows with a non-empty special_type field
+
+    Returns:
+        Tuple of (frames, image_filenames).  image_filenames[i] is the
+        JPG basename derived from the source CSV, or None if absent.
     """
     pattern = os.path.join(_DATA_DIR, "*_detections.csv")
     # Only sessions whose wall-clock hour prefix is NOT 211 (that's the kpis session)
@@ -152,6 +170,7 @@ def _load_csv_frames() -> List[Dict[str, Dict[str, Any]]]:
         sessions[session_id].append(path)
 
     result: List[Dict[str, Dict[str, Any]]] = []
+    images: List[Optional[str]] = []
 
     for session_id, paths in sorted(sessions.items()):
         prev_ts: Optional[float] = None
@@ -207,9 +226,92 @@ def _load_csv_frames() -> List[Dict[str, Dict[str, Any]]]:
                 }
 
             result.append(payload)
+            # Derive image filename: strip _detections.csv → .jpg
+            img_base = os.path.basename(path).replace("_detections.csv", "")
+            img_name = img_base + ".jpg"
+            images.append(
+                img_name
+                if os.path.exists(os.path.join(_DATA_DIR, img_name))
+                else None
+            )
             prev_ts = snapshot_ts
             prev_counts = {cam: by_cam[cam]["persons"] for cam in COUNTER_CAMERAS}
 
+    return result, images
+
+
+def _load_alerts() -> List[List[Dict[str, Any]]]:
+    """
+    Load per-frame alert CSVs.
+
+    Matches each frame to its corresponding ``*_alerts.csv`` using the same
+    basename-to-image matching logic used for JPGs.  Frames without an alert
+    file get an empty list.
+
+    Alert record shape::
+
+        {
+          camera, severity, risk_score, queue_pressure, flow_degradation,
+          clearance_delay, baggage_load, queue_trend, flow_trend,
+          time_to_breach_s, top_action, explanation
+        }
+    """
+    def _read_csv_alerts(base: str) -> List[Dict[str, Any]]:
+        path = os.path.join(_DATA_DIR, base + "_alerts.csv")
+        if not os.path.exists(path):
+            return []
+        out = []
+        with open(path, newline="") as fh:
+            for row in csv.DictReader(fh):
+                if row.get("camera", "").strip() in COUNTER_CAMERAS:
+                    try:
+                        out.append({
+                            "camera":          row["camera"].strip(),
+                            "severity":        row.get("severity", "").strip(),
+                            "risk_score":      float(row.get("risk_score", 0) or 0),
+                            "queue_pressure":  float(row.get("queue_pressure", 0) or 0),
+                            "flow_degradation":float(row.get("flow_degradation", 0) or 0),
+                            "time_to_breach_s":float(row.get("time_to_breach_s", 0) or 0),
+                            "top_action":      row.get("top_action", "").strip(),
+                            "explanation":     row.get("explanation", "").strip(),
+                        })
+                    except (ValueError, KeyError):
+                        pass
+        return out
+
+    result: List[List[Dict[str, Any]]] = []
+    for img in _FRAME_IMAGES:
+        if img:
+            base = img.replace(".jpg", "")
+            result.append(_read_csv_alerts(base))
+        else:
+            result.append([])
+    return result
+
+
+def _load_heatmap_index() -> List[Dict[str, str]]:
+    """
+    Build per-frame dict mapping camera name → heatmap JPG basename.
+
+    Only frames whose image basename has a matching set of heatmaps in
+    ``snapshots4/heatmaps/`` get a non-empty dict.
+    """
+    heatmap_dir = os.path.join(_DATA_DIR, "heatmaps")
+    result: List[Dict[str, str]] = []
+    for img in _FRAME_IMAGES:
+        cams: Dict[str, str] = {}
+        if img:
+            base = img.replace(".jpg", "")
+            for cam_key, cam_label in [
+                ("Gate_A",       "Gate A"),
+                ("Security",     "Security"),
+                ("Arrivals_Hall","Arrivals Hall"),
+                ("Departures",   "Departures"),
+            ]:
+                fname = f"{base}_heatmap_{cam_key}.jpg"
+                if os.path.exists(os.path.join(heatmap_dir, fname)):
+                    cams[cam_label] = fname
+        result.append(cams)
     return result
 
 
@@ -234,7 +336,14 @@ def _load_scene_analysis() -> Dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 # CSV-derived frames first (chronologically earlier sessions), then kpis frames
-_FRAMES: List[Dict[str, Dict[str, Any]]] = _load_csv_frames() + _load_kpis()
+_csv_frames, _csv_images     = _load_csv_frames()
+_kpis_frames, _kpis_images   = _load_kpis()
+_FRAMES: List[Dict[str, Dict[str, Any]]] = _csv_frames + _kpis_frames
+_FRAME_IMAGES: List[Optional[str]]       = _csv_images + _kpis_images
+
+# Per-frame alert records and heatmap filenames (built after _FRAME_IMAGES is ready)
+_FRAME_ALERTS:   List[List[Dict[str, Any]]] = _load_alerts()
+_FRAME_HEATMAPS: List[Dict[str, str]]       = _load_heatmap_index()
 
 # Total number of distinct frames available
 SNAPSHOT_COUNT: int = len(_FRAMES)
@@ -276,6 +385,31 @@ def get_snapshot_payload(index: Optional[int] = None) -> Dict[str, Dict[str, Any
         idx = int(index) % SNAPSHOT_COUNT
 
     return dict(_FRAMES[idx])
+
+
+def get_frame_image(index: int) -> Optional[str]:
+    """
+    Return the JPG basename for the given frame index, or None.
+
+    The returned filename can be served via ``GET /api/snapshot_image/<filename>``.
+    """
+    if not _FRAME_IMAGES:
+        return None
+    return _FRAME_IMAGES[int(index) % len(_FRAME_IMAGES)]
+
+
+def get_frame_alerts(index: int) -> List[Dict[str, Any]]:
+    """Return the list of alert records for the given frame index (may be empty)."""
+    if not _FRAME_ALERTS:
+        return []
+    return _FRAME_ALERTS[int(index) % len(_FRAME_ALERTS)]
+
+
+def get_frame_heatmaps(index: int) -> Dict[str, str]:
+    """Return {camera_name: heatmap_filename} for the given frame index."""
+    if not _FRAME_HEATMAPS:
+        return {}
+    return _FRAME_HEATMAPS[int(index) % len(_FRAME_HEATMAPS)]
 
 
 def get_all_snapshots() -> List[Dict[str, Any]]:

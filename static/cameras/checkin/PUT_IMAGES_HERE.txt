@@ -1,0 +1,7 @@
+Place camera images for Check-in Points (C1-C10) here.
+
+Expected filenames:
+  heatmap 1.jpg   — heatmap overlay from the check-in camera
+  normal 1.jpg    — normal camera view of the check-in area
+
+You can add more pairs: heatmap 2.jpg / normal 2.jpg, etc.

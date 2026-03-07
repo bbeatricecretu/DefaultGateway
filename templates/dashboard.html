@@ -223,6 +223,79 @@
     position: absolute; bottom: 10px; right: 12px;
     font-size: .65rem; color: var(--muted); pointer-events: none;
   }
+
+  /* ── ZONE LABELS (CSS2D) ────────────────────────────────────────── */
+  .zone-label {
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: var(--mono, 'Fira Code', monospace);
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    pointer-events: auto;
+    text-shadow: 0 1px 4px rgba(0,0,0,.6);
+    letter-spacing: .04em;
+    line-height: 1;
+    user-select: none;
+    transition: filter .15s;
+  }
+  .zone-label:hover { filter: brightness(1.25); }
+
+  /* ── LIVE CAMERAS ───────────────────────────────────────────────── */
+  .cameras-panel {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px;
+  }
+  .cameras-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .cameras-header h3 { margin: 0; font-size: .95rem; color: var(--text); font-weight: 700; }
+  .cam-ts { font-size: .72rem; font-family: var(--mono); color: var(--muted); }
+  .cam-zone-tabs {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;
+  }
+  .cam-tab {
+    padding: 5px 14px; border-radius: 6px; cursor: pointer;
+    font-size: .78rem; font-weight: 700; border: 2px solid transparent;
+    transition: opacity .15s, border-color .15s;
+    color: #fff; opacity: .65;
+  }
+  .cam-tab:hover  { opacity: .85; }
+  .cam-tab.active { opacity: 1; border-color: rgba(255,255,255,.5); }
+  .cam-tab.no-data { opacity: .3; cursor: default; }
+  #cam-snapshot-wrap img {
+    width: 100%; display: block; border-radius: 6px;
+    object-fit: contain; background: var(--bg); max-height: 520px;
+  }
+  .feed-placeholder {
+    height: 280px; display: flex; align-items: center; justify-content: center;
+    font-size: .8rem; color: var(--muted); background: var(--bg); border-radius: 6px;
+  }
+
+  /* ── ALERT BANNERS ────────────────────────────────────────────── */
+  .alerts-panel {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px;
+  }
+  .alert-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 8px 0; border-bottom: 1px solid var(--border); font-size: .8rem;
+  }
+  .alert-row:last-child { border-bottom: none; }
+  .alert-sev {
+    font-size: .65rem; font-weight: 700; padding: 2px 8px; border-radius: 4px;
+    white-space: nowrap; flex-shrink: 0; margin-top: 1px;
+    letter-spacing: .08em; text-transform: uppercase;
+  }
+  .alert-sev.RED    { background: rgba(239,68,68,.25);  color: #f87171; }
+  .alert-sev.AMBER  { background: rgba(245,158,11,.22); color: #fbbf24; }
+  .alert-sev.GREEN  { background: rgba(34,197,94,.2);   color: #4ade80; }
+  .alert-cam  { font-weight: 700; color: var(--text); }
+  .alert-body { color: var(--muted); font-size: .74rem; margin-top: 2px; }
+  .alert-action { font-size: .72rem; color: var(--accent2); margin-top: 2px; }
+  .no-alerts  { color: var(--muted); font-size: .8rem; padding: 8px 0; }
 </style>
 </head>
 <body>
@@ -305,6 +378,25 @@
     </div>
   </div>
 
+  <!-- Live Cameras -->
+  <div class="cameras-panel" id="cameras-panel">
+    <div class="cameras-header">
+      <h3>📷 Live Camera Feed</h3>
+      <span class="cam-ts" id="cam-zone-name">Click a zone on the map</span>
+      <span class="cam-ts" id="cam-timestamp">—</span>
+    </div>
+    <!-- No camera-switch tabs: zone labels on the 3D map are the only controls -->
+    <div id="cam-snapshot-wrap">
+      <div class="feed-placeholder">Click a zone label on the 3D map to view its camera feed</div>
+    </div>
+  </div>
+
+  <!-- AI Alerts -->
+  <div class="alerts-panel panel" id="alerts-panel">
+    <div class="section-title">⚠️ AI Zone Alerts</div>
+    <div id="alerts-list"><div class="no-alerts">✓ No alerts for this frame.</div></div>
+  </div>
+
 </main>
 
 <!-- ── TIMELINE ───────────────────────────────────────────────────────── -->
@@ -374,6 +466,137 @@ function fetchFrame(idx) {
     .then(r => r.json())
     .then(d => { d._frame = idx; applyData(d); });
 }
+// ── Centralized zone-to-camera mapping ────────────────────────────────────
+const ZONE_CAMERA_MAP = {
+  gate1:         { folder: 'Gate_A',        label: 'Gate A',        color: '#2563eb' },
+  gate2:         { folder: 'Gate_A',        label: 'Gate A',        color: '#2563eb' },
+  gate3:         { folder: 'Gate_A',        label: 'Gate A',        color: '#2563eb' },
+  gate4:         { folder: 'Gate_A',        label: 'Gate A',        color: '#2563eb' },
+  gate5:         { folder: 'Gate_A',        label: 'Gate A',        color: '#2563eb' },
+  gate6:         { folder: 'Gate_A',        label: 'Gate A',        color: '#2563eb' },
+  waiting_left:  { folder: 'Departures',    label: 'Departures',    color: '#16a34a' },
+  waiting_right: { folder: 'Departures',    label: 'Departures',    color: '#16a34a' },
+  security:      { folder: 'Security',      label: 'Security',      color: '#dc2626' },
+  checkin:       { folder: 'Arrivals_Hall', label: 'Arrivals Hall', color: '#ca8a04' },
+  baggage:       { folder: 'Arrivals_Hall', label: 'Arrivals Hall', color: '#0891b2' },
+};
+
+let _activeZoneId  = null;   // currently selected zone id (key into ZONE_CAMERA_MAP)
+let _zoneFileCache = {};     // { folder: [filename, …] } – cached per session
+let _curAlerts     = [];     // latest frame alerts (all cameras)
+
+// Fetch and cache the file list for a camera folder
+async function getZoneFiles(folder) {
+  if (_zoneFileCache[folder]) return _zoneFileCache[folder];
+  try {
+    const resp = await fetch(`/api/camera_list/${folder}`);
+    const data = await resp.json();
+    _zoneFileCache[folder] = data.files || [];
+    return _zoneFileCache[folder];
+  } catch (e) {
+    console.error('Failed to load camera list for', folder, e);
+    return [];
+  }
+}
+
+async function renderCamImage() {
+  const wrap    = document.getElementById('cam-snapshot-wrap');
+  const nameEl  = document.getElementById('cam-zone-name');
+  const tsEl    = document.getElementById('cam-timestamp');
+
+  if (!_activeZoneId) {
+    wrap.innerHTML = '<div class="feed-placeholder">Click a zone label on the 3D map to view its camera feed</div>';
+    if (nameEl) nameEl.textContent = 'Click a zone on the map';
+    if (tsEl) tsEl.textContent = '—';
+    return;
+  }
+
+  const mapping = ZONE_CAMERA_MAP[_activeZoneId];
+  if (!mapping) {
+    wrap.innerHTML = '<div class="feed-placeholder">No camera data for this zone</div>';
+    return;
+  }
+
+  const files = await getZoneFiles(mapping.folder);
+  if (!files.length) {
+    wrap.innerHTML = '<div class="feed-placeholder">No camera images available</div>';
+    return;
+  }
+
+  // Pick frame by current timeline index (modulo available files)
+  const idx = currentFrame % files.length;
+  const fname = files[idx];
+  const url = `/api/camera_image/${mapping.folder}/${fname}`;
+
+  // Update zone label and timestamp
+  if (nameEl) nameEl.textContent = `Zone: ${mapping.label}`;
+  if (tsEl && fname) {
+    const parts = fname.replace('.jpg', '').split('_');
+    if (parts.length >= 5) {
+      const d = parts[1], t = parts[2], n = parseInt(parts[3], 10);
+      tsEl.textContent =
+        `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)} · ${t.slice(0,2)}:${t.slice(2,4)}:${t.slice(4,6)} · frame #${n}`;
+    }
+  }
+
+  const existing = wrap.querySelector('img');
+  if (existing) {
+    existing.src = url;
+  } else {
+    wrap.innerHTML = '';
+    const img = document.createElement('img');
+    img.onerror = () => { wrap.innerHTML = '<div class="feed-placeholder">Image not available</div>'; };
+    img.src = url;
+    wrap.appendChild(img);
+  }
+}
+
+// Called by zone label click to select a zone
+function selectZone(zoneId) {
+  _activeZoneId = zoneId;
+  renderCamImage();
+  renderAlerts(_curAlerts);
+  document.getElementById('cameras-panel')
+    .scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function updateCameraView(imageFile, heatmaps) {
+  // Still receive SSE data but only use it if a zone is active
+  renderCamImage();
+}
+
+// ── AI Alerts (zone-specific) ─────────────────────────────────────────────
+function renderAlerts(alerts) {
+  _curAlerts = alerts || [];
+  const el = document.getElementById('alerts-list');
+
+  let filtered = _curAlerts;
+  // If a zone is selected, filter alerts to that zone's camera label only
+  if (_activeZoneId && ZONE_CAMERA_MAP[_activeZoneId]) {
+    const camLabel = ZONE_CAMERA_MAP[_activeZoneId].label;
+    filtered = _curAlerts.filter(a => a.camera === camLabel);
+  }
+
+  if (!filtered.length) {
+    const zoneName = _activeZoneId && ZONE_CAMERA_MAP[_activeZoneId]
+      ? ZONE_CAMERA_MAP[_activeZoneId].label
+      : 'this frame';
+    el.innerHTML = `<div class="no-alerts">✓ No alerts for ${zoneName}.</div>`;
+    return;
+  }
+  el.innerHTML = filtered.map(a => `
+    <div class="alert-row">
+      <span class="alert-sev ${a.severity}">${a.severity || '?'}</span>
+      <div>
+        <div class="alert-cam">${a.camera}
+          ${a.risk_score ? `<span style="font-size:.7rem;font-weight:400;color:var(--muted);margin-left:6px">risk ${a.risk_score.toFixed(0)}%</span>` : ''}
+        </div>
+        <div class="alert-body">${a.explanation || ''}</div>
+        ${a.top_action ? `<div class="alert-action">↳ ${a.top_action}</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
 
 // ── Render full dashboard from data ─────────────────────────────────────
 function applyData(data) {
@@ -384,6 +607,8 @@ function applyData(data) {
     buildTimeline();
   }
 
+  updateCameraView(data._snapshot_image || null, data._heatmaps || {});
+  renderAlerts(data._alerts || []);
   updateMetrics(data.system_metrics || {});
   renderCounters(data.counters || []);
   renderFlights(data.flights || []);
@@ -465,7 +690,27 @@ function renderCounters(counters) {
   });
 }
 
-// ── Flights ──────────────────────────────────────────────────────────────
+// ── Flights (risk-matched subtext) ───────────────────────────────────────
+function riskSubtext(flight) {
+  // Derive risk level from the at_risk flag and status
+  if (flight.at_risk) {
+    return '⚠ Congestion risk high – possible boarding delays. Staff reallocation recommended.';
+  }
+  // Use expectation if it mentions risk
+  const exp = (flight.expectation || '').toLowerCase();
+  if (exp.includes('high') || exp.includes('critical')) {
+    return '⚠ High congestion detected – boarding impact likely. Immediate action advised.';
+  }
+  if (exp.includes('medium') || exp.includes('moderate') || exp.includes('caution')) {
+    return '⚡ Minor delays possible – monitoring congestion levels closely.';
+  }
+  // Low risk / landed / normal
+  if (flight.status && flight.status.toUpperCase().includes('LAND')) {
+    return '✓ Flight landed – passengers arriving at Arrivals Hall shortly.';
+  }
+  return '✓ All systems normal – on-time boarding expected.';
+}
+
 function renderFlights(flights) {
   const el = document.getElementById('flights-list');
   if (!flights.length) { el.innerHTML = '<div class="no-opt">No flights registered.</div>'; return; }
@@ -477,7 +722,7 @@ function renderFlights(flights) {
           <span class="flight-status">${f.status || ''}</span>
           <span class="at-risk-badge ${f.at_risk ? 'yes' : 'no'}">${f.at_risk ? '⚠ AT RISK' : '✓ OK'}</span>
         </div>
-        <div class="flight-expect">${f.expectation || ''}</div>
+        <div class="flight-expect">${riskSubtext(f)}</div>
         ${f.clearance_forecast ? `<div class="flight-expect" style="color:var(--accent2)">Clearance: ${f.clearance_forecast}</div>` : ''}
       </div>
     </div>
@@ -619,6 +864,7 @@ fetch('/api/mock/snapshots')
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
 // ── Canvas setup ─────────────────────────────────────────────────────────
 const wrap    = document.getElementById('map-canvas-wrap');
@@ -630,6 +876,13 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type    = THREE.PCFSoftShadowMap;
 wrap.appendChild(renderer.domElement);
+
+const css2dRenderer = new CSS2DRenderer();
+css2dRenderer.setSize(wrap.clientWidth, wrap.clientHeight);
+css2dRenderer.domElement.style.position = 'absolute';
+css2dRenderer.domElement.style.top = '0';
+css2dRenderer.domElement.style.pointerEvents = 'none';  // overlay itself non-blocking
+wrap.appendChild(css2dRenderer.domElement);
 
 const camera = new THREE.PerspectiveCamera(45, 1, 0.01, 500);
 camera.position.set(0, 2.8, 3.5);
@@ -703,7 +956,7 @@ let imgAspect = 1381 / 766;   // updated when texture loads
 function imgToWorld(nx, ny) {
   return [
     (nx - 0.5) * imgAspect,
-    (0.5 - ny),             // flip Y
+    (ny - 0.5),             // image top (ny=0) → -0.5, bottom (ny=1) → +0.5; rotateX(-PI/2) flips to match floor
   ];
 }
 
@@ -772,7 +1025,7 @@ function buildZones(zonesData) {
       zoneName:  zone.name,
       color:     zone.color,
       baseEmissive: 0.08,
-      centroid:  centroid(pts),
+      centroid:  (() => { const [cx, cz] = centroid(pts); return [cx, -cz]; })(),
     };
 
     // Edge outline
@@ -786,6 +1039,23 @@ function buildZones(zonesData) {
 
     scene.add(mesh);
     zoneMeshes.push(mesh);
+
+    // ── Zone label as clickable CSS2D button ──
+    const labelDiv = document.createElement('div');
+    labelDiv.className = 'zone-label';
+    labelDiv.textContent = zone.name;
+    labelDiv.style.backgroundColor = zone.color + 'cc';
+    labelDiv.style.cursor = 'pointer';
+    // Click on label → select that zone's camera tab
+    labelDiv.addEventListener('click', () => {
+      // Use the centralized zone-to-camera mapping
+      selectZone(zone.id);
+    });
+    const labelObj = new CSS2DObject(labelDiv);
+    const [lcx, lcz] = centroid(pts);
+    // Negate Z because ExtrudeGeometry.rotateX(-PI/2) flips the shape's Y→-Z
+    labelObj.position.set(lcx, EXTRUDE_H + 0.06, -lcz);
+    scene.add(labelObj);
   });
 
   // Build legend
@@ -828,7 +1098,7 @@ function onPointerClick(e) {
   if (!hits.length) return;
 
   const mesh = hits[0].object;
-  const { zoneName, centroid: [cx, cz] } = mesh.userData;
+  const { zoneId, zoneName, centroid: [cx, cz] } = mesh.userData;
 
   // Fly camera above the clicked zone
   const target = new THREE.Vector3(cx, 0, cz);
@@ -839,6 +1109,9 @@ function onPointerClick(e) {
   tooltip.textContent = `📍 ${zoneName}`;
   tooltip.classList.add('visible');
   setTimeout(() => tooltip.classList.remove('visible'), 2500);
+
+  // Also switch camera feed and alerts to this zone
+  if (zoneId) selectZone(zoneId);
 }
 
 wrap.addEventListener('pointermove', onPointerMove);
@@ -856,6 +1129,7 @@ function resize() {
   const W = wrap.clientWidth;
   const H = wrap.clientHeight;
   renderer.setSize(W, H);
+  css2dRenderer.setSize(W, H);
   camera.aspect = W / H;
   camera.updateProjectionMatrix();
 }
@@ -891,6 +1165,7 @@ function animate() {
   }
 
   renderer.render(scene, camera);
+  css2dRenderer.render(scene, camera);
 }
 animate();
 </script>

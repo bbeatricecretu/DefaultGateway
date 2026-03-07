@@ -1,0 +1,7 @@
+Place camera images for Baggage Management here.
+
+Expected filenames:
+  heatmap 1.jpg   — heatmap overlay from the baggage camera
+  normal 1.jpg    — normal camera view of the baggage area
+
+You can add more pairs: heatmap 2.jpg / normal 2.jpg, etc.

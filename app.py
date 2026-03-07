@@ -298,6 +298,9 @@ def snapshot_stream() -> Response:
                 output: Dict[str, Any] = _engine.run(payload)
                 output["_frame"] = idx
                 output["_total"] = mock_snapshot4.SNAPSHOT_COUNT
+                output["_snapshot_image"]  = mock_snapshot4.get_frame_image(idx)
+                output["_alerts"]          = mock_snapshot4.get_frame_alerts(idx)
+                output["_heatmaps"]        = mock_snapshot4.get_frame_heatmaps(idx)
                 yield f"data: {json.dumps(output)}\n\n"
             except Exception as exc:
                 yield f"data: {{\"error\": \"{exc}\"}}\n\n"
@@ -329,6 +332,54 @@ def serve_static(filename: str) -> Response:
     """Serve files from the project-level static/ folder (floor plan, zones JSON)."""
     static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
     return send_from_directory(static_dir, filename)
+
+
+@app.get("/api/snapshot_image/<path:filename>")
+def serve_snapshot_image(filename: str) -> Response:
+    """Serve JPG snapshot images (and heatmaps) from the snapshots4 data folder."""
+    data_dir = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "snapshots4#2", "snapshots4"
+    )
+    return send_from_directory(data_dir, filename)
+
+
+@app.get("/api/heatmap_image/<path:filename>")
+def serve_heatmap_image(filename: str) -> Response:
+    """Serve per-camera heatmap images from the snapshots4/heatmaps/ folder."""
+    heatmap_dir = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "snapshots4#2", "snapshots4", "heatmaps"
+    )
+    return send_from_directory(heatmap_dir, filename)
+
+
+# ---------------------------------------------------------------------------
+# Per-zone camera images from the new cameras/ folder
+# ---------------------------------------------------------------------------
+
+_CAMERAS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cameras")
+
+
+@app.get("/api/camera_image/<zone>/<path:filename>")
+def serve_camera_image(zone: str, filename: str) -> Response:
+    """Serve a per-zone camera image from cameras/<zone>/<filename>."""
+    zone_dir = os.path.join(_CAMERAS_DIR, zone)
+    if not os.path.isdir(zone_dir):
+        return jsonify({"error": f"Unknown camera zone: {zone}"}), 404
+    return send_from_directory(zone_dir, filename)
+
+
+@app.get("/api/camera_list/<zone>")
+def list_camera_images(zone: str) -> Response:
+    """Return a sorted list of image filenames for a camera zone."""
+    zone_dir = os.path.join(_CAMERAS_DIR, zone)
+    if not os.path.isdir(zone_dir):
+        return jsonify({"error": f"Unknown camera zone: {zone}"}), 404
+    files = sorted(
+        f for f in os.listdir(zone_dir)
+        if f.lower().endswith(('.jpg', '.jpeg', '.png'))
+    )
+    return jsonify({"zone": zone, "total": len(files), "files": files}), 200
 
 
 # ---------------------------------------------------------------------------
@@ -373,6 +424,9 @@ def single_snapshot(index: int) -> Response:
     try:
         payload = mock_snapshot4.get_snapshot_payload(index=index)
         output: Dict[str, Any] = _engine.run(payload)
+        output["_snapshot_image"] = mock_snapshot4.get_frame_image(index)
+        output["_alerts"]         = mock_snapshot4.get_frame_alerts(index)
+        output["_heatmaps"]       = mock_snapshot4.get_frame_heatmaps(index)
         return jsonify(output), 200
     except (RuntimeError, ValueError) as exc:
         return jsonify({"error": str(exc)}), 500
