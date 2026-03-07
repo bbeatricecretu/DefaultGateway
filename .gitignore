@@ -1,0 +1,57 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.dll
+
+# Virtual environment
+.venv/
+venv/
+env/
+ENV/
+
+# Distribution / packaging
+.eggs/
+dist/
+build/
+wheels/
+*.egg-info/
+*.whl
+MANIFEST
+
+# PyInstaller
+/dist/
+/build/
+.pytest_cache/
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+*.log
+*.rpt
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# OS or Editor related
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+*.swo
+.vscode/
+
+# MyPy cache
+.mypy_cache/
+
+# dotenv environment variables file
+.env
+
+# Local secrets
+secrets.json

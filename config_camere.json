@@ -1,0 +1,23 @@
+{
+    "harta_img": "/static/harta.png",
+    "camere": {
+      "Camera_Securitate": {
+        "x": 25,
+        "y": 40,
+        "sursa": "/Users/vlad/Desktop/DefaultGateway/datasets/videos/fight_0085.mpeg",
+        "adiacente": ["Camera_Coridor_A"]
+      },
+      "Camera_Coridor_A": {
+        "x": 50,
+        "y": 50,
+        "sursa": "/Users/vlad/Desktop/DefaultGateway/datasets/videos/fight_0085.mpeg",
+        "adiacente": ["Camera_Securitate", "Camera_Poarta_12"]
+      },
+      "Camera_Poarta_12": {
+        "x": 80,
+        "y": 30,
+        "sursa": "/Users/vlad/Desktop/DefaultGateway/datasets/videos/fight_0085.mpeg",
+        "adiacente": ["Camera_Coridor_A"]
+      }
+    }
+  }
