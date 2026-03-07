@@ -357,6 +357,95 @@ _cycle_index: int = 0
 
 
 # ---------------------------------------------------------------------------
+# Showcase overrides – high-disruption frames for demonstration purposes
+# ---------------------------------------------------------------------------
+# Frames 25, 26, 27 are patched with synthetic critical-disruption data
+# (security meltdown + gate overload) to provide a compelling live demo.
+# The engine still processes the raw counter data and will compute High risk.
+
+_SHOWCASE_OVERRIDES: Dict[int, Dict[str, Any]] = {
+    25: {
+        "counters": {
+            "Gate A":        {"queue_size": 28, "flow_rate": 0.30, "avg_baggage": 2.1, "special_items": 3},
+            "Security":      {"queue_size": 35, "flow_rate": 0.20, "avg_baggage": 1.9, "special_items": 5},
+            "Arrivals Hall": {"queue_size": 11, "flow_rate": 1.80, "avg_baggage": 1.4, "special_items": 1},
+            "Departures":    {"queue_size": 22, "flow_rate": 0.50, "avg_baggage": 1.6, "special_items": 2},
+        },
+        "alerts": [
+            {"camera": "Security",      "severity": "RED",   "risk_score": 91.0,
+             "queue_pressure": 0.88, "flow_degradation": 0.83, "time_to_breach_s": 185,
+             "top_action": "Deploy additional security officer and open all available lanes immediately.",
+             "explanation": "Security checkpoint has reached critical queue density. Flow degradation is severe — queue is not clearing at a safe rate."},
+            {"camera": "Gate A",        "severity": "RED",   "risk_score": 77.0,
+             "queue_pressure": 0.73, "flow_degradation": 0.67, "time_to_breach_s": 425,
+             "top_action": "Open relief gate and redirect overflow passengers via Gate A2.",
+             "explanation": "Gate A boarding queue is critically overstuffed. Multiple departures are now at risk of missed windows."},
+            {"camera": "Departures",    "severity": "AMBER", "risk_score": 53.0,
+             "queue_pressure": 0.50, "flow_degradation": 0.44, "time_to_breach_s": 910,
+             "top_action": "Open second check-in position at the departures hall.",
+             "explanation": "Departures queue building steadily. Cascade into gate areas expected within 15 minutes if not addressed."},
+            {"camera": "Arrivals Hall", "severity": "GREEN", "risk_score": 14.0,
+             "queue_pressure": 0.12, "flow_degradation": 0.08, "time_to_breach_s": 9999,
+             "top_action": "No action needed.",
+             "explanation": "Arrivals Hall is operating within normal parameters. No intervention required."},
+        ],
+    },
+    26: {
+        "counters": {
+            "Gate A":        {"queue_size": 34, "flow_rate": 0.18, "avg_baggage": 2.5, "special_items": 5},
+            "Security":      {"queue_size": 41, "flow_rate": 0.12, "avg_baggage": 2.0, "special_items": 7},
+            "Arrivals Hall": {"queue_size": 10, "flow_rate": 2.10, "avg_baggage": 1.3, "special_items": 0},
+            "Departures":    {"queue_size": 29, "flow_rate": 0.30, "avg_baggage": 1.8, "special_items": 3},
+        },
+        "alerts": [
+            {"camera": "Security",      "severity": "RED",   "risk_score": 97.0,
+             "queue_pressure": 0.95, "flow_degradation": 0.91, "time_to_breach_s": 88,
+             "top_action": "EVACUATE non-essential staff and open ALL lanes immediately. Supervisor to post at checkpoint entrance.",
+             "explanation": "CRITICAL: Security checkpoint has exceeded maximum safe operating capacity. Breach of crowd safety limit is imminent."},
+            {"camera": "Gate A",        "severity": "RED",   "risk_score": 84.0,
+             "queue_pressure": 0.80, "flow_degradation": 0.75, "time_to_breach_s": 305,
+             "top_action": "Emergency reallocation: redirect DL789 boarding to Gate B overflow area.",
+             "explanation": "Gate A is at saturation. DL789 boarding cannot proceed safely. Two additional departures are at risk within 30 minutes."},
+            {"camera": "Departures",    "severity": "RED",   "risk_score": 65.0,
+             "queue_pressure": 0.62, "flow_degradation": 0.57, "time_to_breach_s": 605,
+             "top_action": "Activate passive queue management — deploy lane dividers and call in two additional agents.",
+             "explanation": "Departures hall has crossed the amber threshold. Crowd density is approaching the safety limit in zone B3."},
+            {"camera": "Arrivals Hall", "severity": "GREEN", "risk_score": 17.0,
+             "queue_pressure": 0.15, "flow_degradation": 0.11, "time_to_breach_s": 9999,
+             "top_action": "No action needed.",
+             "explanation": "Arrivals Hall operating within normal parameters. Clearance rate stable."},
+        ],
+    },
+    27: {
+        "counters": {
+            "Gate A":        {"queue_size": 29, "flow_rate": 0.35, "avg_baggage": 2.2, "special_items": 3},
+            "Security":      {"queue_size": 33, "flow_rate": 0.28, "avg_baggage": 1.85, "special_items": 5},
+            "Arrivals Hall": {"queue_size": 14, "flow_rate": 1.50, "avg_baggage": 1.4,  "special_items": 1},
+            "Departures":    {"queue_size": 24, "flow_rate": 0.60, "avg_baggage": 1.7,  "special_items": 2},
+        },
+        "alerts": [
+            {"camera": "Security",      "severity": "RED",   "risk_score": 85.0,
+             "queue_pressure": 0.82, "flow_degradation": 0.77, "time_to_breach_s": 245,
+             "top_action": "Maintain all lanes open — supervisor to conduct 3-minute check cycles.",
+             "explanation": "Security queue reducing but still in critical zone. Sustained intervention required — any relaxation risks a secondary surge."},
+            {"camera": "Gate A",        "severity": "AMBER", "risk_score": 61.0,
+             "queue_pressure": 0.58, "flow_degradation": 0.52, "time_to_breach_s": 545,
+             "top_action": "Continue boarding prioritisation for special-assist passengers.",
+             "explanation": "Gate A queue is improving. Boarding process has partially stabilised. Maintain elevated staffing for the next 20 minutes."},
+            {"camera": "Departures",    "severity": "AMBER", "risk_score": 47.0,
+             "queue_pressure": 0.44, "flow_degradation": 0.40, "time_to_breach_s": 1210,
+             "top_action": "Monitor and report back in 10 minutes.",
+             "explanation": "Departures recovering. Queue density reduced 17% from peak. Stand-down may be issued if positive trend continues."},
+            {"camera": "Arrivals Hall", "severity": "GREEN", "risk_score": 20.0,
+             "queue_pressure": 0.18, "flow_degradation": 0.13, "time_to_breach_s": 9999,
+             "top_action": "No action needed.",
+             "explanation": "Arrivals Hall continues to operate smoothly. No intervention needed."},
+        ],
+    },
+}
+
+
+# ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
 
@@ -384,6 +473,9 @@ def get_snapshot_payload(index: Optional[int] = None) -> Dict[str, Dict[str, Any
     else:
         idx = int(index) % SNAPSHOT_COUNT
 
+    override = _SHOWCASE_OVERRIDES.get(idx)
+    if override:
+        return dict(override["counters"])
     return dict(_FRAMES[idx])
 
 
@@ -400,9 +492,13 @@ def get_frame_image(index: int) -> Optional[str]:
 
 def get_frame_alerts(index: int) -> List[Dict[str, Any]]:
     """Return the list of alert records for the given frame index (may be empty)."""
+    idx = int(index) % SNAPSHOT_COUNT
+    override = _SHOWCASE_OVERRIDES.get(idx)
+    if override:
+        return list(override["alerts"])
     if not _FRAME_ALERTS:
         return []
-    return _FRAME_ALERTS[int(index) % len(_FRAME_ALERTS)]
+    return _FRAME_ALERTS[idx % len(_FRAME_ALERTS)]
 
 
 def get_frame_heatmaps(index: int) -> Dict[str, str]:

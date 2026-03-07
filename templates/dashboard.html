@@ -42,11 +42,12 @@
     background: rgba(34,197,94,.15); color: var(--low); border: 1px solid var(--low);
   }
   .status-pill.danger { background: rgba(239,68,68,.15); color: var(--high); border-color: var(--high); }
-  #hdr-timestamp { margin-left: auto; font-size: .78rem; color: var(--muted); font-family: var(--mono); }
-  #hdr-source { font-size: .72rem; color: var(--accent2); margin-left: 8px; }
+  #hdr-source { display: none; }
+  #hdr-timestamp { font-size: .78rem; color: var(--muted); font-family: var(--mono); }
+  .hdr-center { flex: 1; display: flex; justify-content: center; align-items: center; }
 
   /* ── MAIN GRID ───────────────────────────────────────────────────── */
-  main { flex: 1; padding: 18px 24px; display: flex; flex-direction: column; gap: 16px; }
+  main { flex: 1; display: flex; flex-direction: column; min-height: 0; }
 
   /* ── SYSTEM METRICS ROW ─────────────────────────────────────────── */
   .metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
@@ -71,9 +72,9 @@
     border-radius: 10px; padding: 14px 16px;
     transition: border-color .3s;
   }
-  .counter-card.risk-high  { border-color: var(--high); }
-  .counter-card.risk-medium{ border-color: var(--med);  }
-  .counter-card.risk-low   { border-color: var(--low);  }
+  .counter-card.risk-High  { border-color: var(--high); }
+  .counter-card.risk-Medium{ border-color: var(--med);  }
+  .counter-card.risk-Low   { border-color: var(--low);  }
   .counter-name { font-weight: 600; font-size: .88rem; margin-bottom: 4px; }
   .counter-type { font-size: .68rem; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 10px; }
   .risk-badge {
@@ -115,18 +116,6 @@
   .at-risk-badge.yes { background: rgba(239,68,68,.2); color: var(--high); }
   .at-risk-badge.no  { background: rgba(34,197,94,.2);  color: var(--low);  }
   .flight-expect { font-size: .68rem; color: var(--muted); margin-top: 3px; line-height: 1.4; }
-
-  /* scene */
-  .scene-risk {
-    font-size: .78rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: .08em; padding: 3px 10px; border-radius: 6px;
-    display: inline-block; margin-bottom: 10px;
-  }
-  .scene-risk.high   { background: rgba(239,68,68,.15); color: var(--high);  border: 1px solid var(--high); }
-  .scene-risk.medium { background: rgba(245,158,11,.15);color: var(--med);   border: 1px solid var(--med);  }
-  .scene-risk.low    { background: rgba(34,197,94,.15); color: var(--low);   border: 1px solid var(--low);  }
-  .factor-list { list-style: none; font-size: .76rem; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
-  .factor-list li::before { content: '↳ '; color: var(--accent2); }
 
   /* ── OPTIMIZATIONS ──────────────────────────────────────────────── */
   .opt-list { display: flex; flex-direction: column; gap: 8px; }
@@ -289,109 +278,182 @@
     white-space: nowrap; flex-shrink: 0; margin-top: 1px;
     letter-spacing: .08em; text-transform: uppercase;
   }
-  .alert-sev.RED    { background: rgba(239,68,68,.25);  color: #f87171; }
-  .alert-sev.AMBER  { background: rgba(245,158,11,.22); color: #fbbf24; }
-  .alert-sev.GREEN  { background: rgba(34,197,94,.2);   color: #4ade80; }
+  .alert-sev.RED    { background: rgba(239,68,68,.25);  color: var(--high); }
+  .alert-sev.AMBER  { background: rgba(245,158,11,.22); color: var(--med);  }
+  .alert-sev.GREEN  { background: rgba(34,197,94,.2);   color: var(--low);  }
   .alert-cam  { font-weight: 700; color: var(--text); }
   .alert-body { color: var(--muted); font-size: .74rem; margin-top: 2px; }
   .alert-action { font-size: .72rem; color: var(--accent2); margin-top: 2px; }
   .no-alerts  { color: var(--muted); font-size: .8rem; padding: 8px 0; }
+
+  /* ── VIEW SWITCHING ─────────────────────────────────────────────── */
+  .view-container { padding: 18px 24px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
+  .view-container.hidden { display: none !important; }
+  .nav-btn {
+    padding: 9px 22px; border-radius: 8px; border: 1px solid var(--accent);
+    background: rgba(14,165,233,.15); color: var(--accent); cursor: pointer;
+    font-size: .85rem; font-weight: 700; letter-spacing: .04em;
+    transition: background .2s, box-shadow .15s;
+    display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
+  }
+  .nav-btn:hover { background: rgba(14,165,233,.3); box-shadow: 0 0 0 1px var(--accent); }
+  .nav-btn.secondary { border-color: var(--border); background: var(--card); color: var(--muted); }
+  .nav-btn.secondary:hover { background: var(--border); color: var(--text); box-shadow: none; }
+  .nav-btn-wide { min-width: 280px; justify-content: center; }
+  .nav-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .view-heading { font-size: .95rem; font-weight: 700; color: var(--text); }
+  /* map-view: equal 1/2 left map + 1/2 right column */
+  .map-view-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: stretch;
+  }
+  #view-map #map-canvas-wrap { height: calc(100vh - 180px); min-height: 460px; }
+  /* right column on map page: stacked alerts + camera each taking half */
+  .map-right-col {
+    display: flex; flex-direction: column; gap: 12px;
+    height: calc(100vh - 180px); min-height: 460px;
+  }
+  .map-right-col > * { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+  .alerts-scroll { flex: 1; min-height: 0; overflow-y: auto; }
+  /* dashboard two-column layout */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+  .dashboard-left  { display: flex; flex-direction: column; gap: 16px; }
+  .dashboard-right { display: flex; flex-direction: column; gap: 16px; }
+  /* override metrics and counters to 2-col when inside the dashboard left column */
+  .dashboard-left .metrics-row  { grid-template-columns: repeat(2, 1fr); }
+  .dashboard-left .counters-grid { grid-template-columns: repeat(2, 1fr); }
 </style>
 </head>
 <body>
 
 <!-- ── HEADER ─────────────────────────────────────────────────────────── -->
 <header>
-  <div class="logo">🛫 Aero<span>Vision</span></div>
+  <div class="logo" id="logo-home" style="cursor:pointer">🛫 Aero<span>Vision</span></div>
   <div id="hdr-status" class="status-pill">CONNECTING…</div>
-  <div id="hdr-source">snapshot4 · live</div>
-  <div id="hdr-timestamp">—</div>
+  <div class="hdr-center"><div id="hdr-timestamp">—</div></div>
+  <button id="btn-nav" class="nav-btn nav-btn-wide">Enter Dashboard</button>
 </header>
 
 <!-- ── MAIN ───────────────────────────────────────────────────────────── -->
 <main>
 
-  <!-- System metrics -->
-  <div>
-    <div class="section-title">System Metrics</div>
-    <div class="metrics-row">
-      <div class="metric-card">
-        <div class="metric-label">Throughput</div>
-        <div class="metric-value" id="m-throughput">—</div>
-        <div class="metric-sub" id="m-throughput-chg">pax / hr</div>
+<!-- ── VIEW: MAP  (front page) ──────────────────────────────────────────── -->
+<div id="view-map" class="view-container">
+
+  <div class="map-view-grid">
+
+    <!-- LEFT: 3D Floor Plan (50%) -->
+    <div class="map-panel">
+      <div class="map-header">
+        <div class="section-title" style="margin:0">Terminal Floor Plan · 3D</div>
+        <span style="font-size:.68rem;color:var(--muted);margin-left:4px">drag to rotate · scroll to zoom · right-drag to pan</span>
+        <button id="btn-reset-cam" class="tl-btn" style="margin-left:auto;font-size:.72rem">⟳ Reset View</button>
       </div>
-      <div class="metric-card">
-        <div class="metric-label">Avg Clearance</div>
-        <div class="metric-value" id="m-clearance">—</div>
-        <div class="metric-sub" id="m-clearance-delta">vs baseline</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label">Critical Bottlenecks</div>
-        <div class="metric-value" id="m-bottlenecks">—</div>
-        <div class="metric-sub">high-risk counters</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label">Flights at Risk</div>
-        <div class="metric-value" id="m-flights-risk">—</div>
-        <div class="metric-sub">boarding impact possible</div>
+      <div id="map-canvas-wrap">
+        <div class="map-tooltip" id="map-tooltip"></div>
+        <div class="map-legend" id="map-legend"></div>
+        <div class="map-hint">click a zone to focus</div>
       </div>
     </div>
-  </div>
 
-  <!-- Counters -->
-  <div>
-    <div class="section-title">Check-in Counters</div>
-    <div class="counters-grid" id="counters-grid">
-      <!-- populated by JS -->
-    </div>
-  </div>
+    <!-- RIGHT: AI Alerts (top half) + Live Camera (bottom half) -->
+    <div class="map-right-col">
 
-  <!-- Bottom row: flights + AI zone alerts -->
-  <div class="bottom-row">
-    <div class="panel">
-      <div class="section-title">Flights</div>
-      <div id="flights-list"></div>
-    </div>
-    <div class="alerts-panel panel" id="alerts-panel-inline">
-      <div class="section-title">⚠️ AI Zone Alerts</div>
-      <div id="alerts-list-inline"><div class="no-alerts">✓ No active alerts for this frame.</div></div>
-    </div>
-  </div>
+      <!-- Top half: AI Zone Alerts -->
+      <div class="alerts-panel panel" id="alerts-panel-inline" style="padding:0;border-radius:10px">
+        <div style="padding:12px 16px;border-bottom:1px solid var(--border);flex-shrink:0">
+          <div class="section-title" style="margin:0">⚠️ AI Zone Alerts</div>
+        </div>
+        <div id="alerts-list-inline" class="alerts-scroll" style="padding:8px 16px">
+          <div class="no-alerts">✓ No active alerts for this frame.</div>
+        </div>
+      </div>
 
-  <!-- Optimizations -->
-  <div class="panel">
-    <div class="section-title">Warnings &amp; Suggestions</div>
-    <div class="opt-list" id="opt-list"></div>
-  </div>
+      <!-- Bottom half: Live Camera Feed -->
+      <div class="cameras-panel" id="cameras-panel" style="border-radius:10px">
+        <div class="cameras-header" style="flex-shrink:0;margin-bottom:8px">
+          <h3>📷 Live Camera Feed</h3>
+          <span class="cam-ts" id="cam-zone-name">Click a zone on the map</span>
+          <span class="cam-ts" id="cam-timestamp">—</span>
+        </div>
+        <div id="cam-snapshot-wrap" style="flex:1;min-height:0;overflow:hidden">
+          <div class="feed-placeholder" style="height:100%">Click a zone label on the 3D map to view its camera feed</div>
+        </div>
+      </div>
 
-  <!-- 3D Floor Plan -->
-  <div class="map-panel">
-    <div class="map-header">
-      <div class="section-title" style="margin:0">Terminal Floor Plan · 3D</div>
-      <span style="font-size:.68rem;color:var(--muted);margin-left:4px">drag to rotate · scroll to zoom · right-drag to pan</span>
-      <button id="btn-reset-cam" class="tl-btn" style="margin-left:auto;font-size:.72rem">⟳ Reset View</button>
-    </div>
-    <div id="map-canvas-wrap">
-      <div class="map-tooltip" id="map-tooltip"></div>
-      <div class="map-legend" id="map-legend"></div>
-      <div class="map-hint">click a zone to focus</div>
-    </div>
-  </div>
+    </div><!-- .map-right-col -->
 
-  <!-- Live Cameras -->
-  <div class="cameras-panel" id="cameras-panel">
-    <div class="cameras-header">
-      <h3>📷 Live Camera Feed</h3>
-      <span class="cam-ts" id="cam-zone-name">Click a zone on the map</span>
-      <span class="cam-ts" id="cam-timestamp">—</span>
-    </div>
-    <!-- No camera-switch tabs: zone labels on the 3D map are the only controls -->
-    <div id="cam-snapshot-wrap">
-      <div class="feed-placeholder">Click a zone label on the 3D map to view its camera feed</div>
-    </div>
-  </div>
+  </div><!-- .map-view-grid -->
+
+</div><!-- #view-map -->
 
 
+<!-- ── VIEW: DASHBOARD ─────────────────────────────────────────────── -->
+<div id="view-dashboard" class="view-container hidden">
+
+  <div class="dashboard-grid">
+
+    <!-- LEFT: System Metrics (2×2) + Check-in Counters (2×2) -->
+    <div class="dashboard-left">
+
+      <div>
+        <div class="section-title">System Metrics</div>
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-label">Throughput</div>
+            <div class="metric-value" id="m-throughput">—</div>
+            <div class="metric-sub" id="m-throughput-chg">pax / hr</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Avg Clearance</div>
+            <div class="metric-value" id="m-clearance">—</div>
+            <div class="metric-sub" id="m-clearance-delta">vs baseline</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Critical Bottlenecks</div>
+            <div class="metric-value" id="m-bottlenecks">—</div>
+            <div class="metric-sub">high-risk counters</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Flights at Risk</div>
+            <div class="metric-value" id="m-flights-risk">—</div>
+            <div class="metric-sub">boarding impact possible</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-title">Check-in Counters</div>
+        <div class="counters-grid" id="counters-grid"></div>
+      </div>
+
+    </div><!-- .dashboard-left -->
+
+    <!-- RIGHT: Flights + Warnings & Suggestions -->
+    <div class="dashboard-right">
+
+      <div class="panel">
+        <div class="section-title">Flights</div>
+        <div id="flights-list"></div>
+      </div>
+
+      <div class="panel">
+        <div class="section-title">Warnings &amp; Suggestions</div>
+        <div class="opt-list" id="opt-list"></div>
+      </div>
+
+    </div><!-- .dashboard-right -->
+
+  </div><!-- .dashboard-grid -->
+
+</div><!-- #view-dashboard -->
 
 </main>
 
@@ -461,17 +523,17 @@ function fetchFrame(idx) {
 }
 // ── Centralized zone-to-camera mapping ────────────────────────────────────
 const ZONE_CAMERA_MAP = {
-  gate1:         { folder: 'Gate_A',        label: 'Gate A',        color: '#2563eb' },
-  gate2:         { folder: 'Gate_A',        label: 'Gate A',        color: '#2563eb' },
-  gate3:         { folder: 'Gate_A',        label: 'Gate A',        color: '#2563eb' },
-  gate4:         { folder: 'Gate_A',        label: 'Gate A',        color: '#2563eb' },
-  gate5:         { folder: 'Gate_A',        label: 'Gate A',        color: '#2563eb' },
-  gate6:         { folder: 'Gate_A',        label: 'Gate A',        color: '#2563eb' },
-  waiting_left:  { folder: 'Departures',    label: 'Departures',    color: '#16a34a' },
-  waiting_right: { folder: 'Departures',    label: 'Departures',    color: '#16a34a' },
-  security:      { folder: 'Security',      label: 'Security',      color: '#dc2626' },
-  checkin:       { folder: 'Arrivals_Hall', label: 'Arrivals Hall', color: '#ca8a04' },
-  baggage:       { folder: 'Arrivals_Hall', label: 'Arrivals Hall', color: '#0891b2' },
+  gate1:         { folder: 'Gate_A',        label: 'Gate 1',                    color: '#2563eb' },
+  gate2:         { folder: 'Gate_A',        label: 'Gate 2',                    color: '#2563eb' },
+  gate3:         { folder: 'Gate_A',        label: 'Gate 3',                    color: '#2563eb' },
+  gate4:         { folder: 'Gate_A',        label: 'Gate 4',                    color: '#2563eb' },
+  gate5:         { folder: 'Gate_A',        label: 'Gate 5',                    color: '#2563eb' },
+  gate6:         { folder: 'Gate_A',        label: 'Gate 6',                    color: '#2563eb' },
+  waiting_left:  { folder: 'Departures',    label: 'Waiting Room (Gates 1–3)', color: '#16a34a' },
+  waiting_right: { folder: 'Departures',    label: 'Waiting Room (Gates 4–6)', color: '#16a34a' },
+  security:      { folder: 'Security',      label: 'Security Points (S1–S4)',  color: '#dc2626' },
+  checkin:       { folder: 'Arrivals_Hall', label: 'Check-in Points (C1–C10)', color: '#ca8a04' },
+  baggage:       { folder: 'Arrivals_Hall', label: 'Baggage Management',         color: '#0891b2' },
 };
 
 let _activeZoneId  = null;   // currently selected zone id (key into ZONE_CAMERA_MAP)
@@ -561,18 +623,22 @@ function updateCameraView(imageFile, heatmaps) {
 // ── AI Alerts (zone-specific + inline panel) ─────────────────────────────
 function buildAlertHTML(alerts) {
   if (!alerts.length) return '';
-  return alerts.map(a => `
+  return alerts.map(a => {
+    const dispName = CAMERA_DISPLAY_NAMES[a.camera] || a.camera;
+    return `
     <div class="alert-row">
       <span class="alert-sev ${a.severity}">${a.severity || '?'}</span>
       <div>
-        <div class="alert-cam">${a.camera}
+        <div class="alert-cam">${dispName}
+          <span style="font-size:.65rem;color:var(--muted);font-weight:400;margin-left:4px">${a.camera}</span>
           ${a.risk_score ? `<span style="font-size:.7rem;font-weight:400;color:var(--muted);margin-left:6px">risk ${a.risk_score.toFixed(0)}%</span>` : ''}
         </div>
         <div class="alert-body">${a.explanation || ''}</div>
         ${a.top_action ? `<div class="alert-action">↳ ${a.top_action}</div>` : ''}
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 function renderAlerts(alerts) {
@@ -632,8 +698,15 @@ function updateMetrics(m) {
   dEl.textContent = delta ? `${delta} vs baseline` : 'vs baseline';
   dEl.className = 'metric-sub ' + (delta.startsWith('+') ? 'down' : delta.startsWith('-') ? 'up' : '');
 
-  setText('m-bottlenecks', m.critical_bottlenecks ?? '—');
-  setText('m-flights-risk', m.flights_at_risk ?? '—');
+  const bnVal = m.critical_bottlenecks;
+  setText('m-bottlenecks', bnVal ?? '—');
+  const bnEl = document.getElementById('m-bottlenecks');
+  if (bnEl) bnEl.style.color = (bnVal > 0) ? 'var(--high)' : (bnVal === 0) ? 'var(--low)' : 'var(--accent)';
+
+  const frVal = m.flights_at_risk;
+  setText('m-flights-risk', frVal ?? '—');
+  const frEl = document.getElementById('m-flights-risk');
+  if (frEl) frEl.style.color = (frVal > 0) ? 'var(--med)' : (frVal === 0) ? 'var(--low)' : 'var(--accent)';
 
   // Header
   document.getElementById('hdr-timestamp').textContent = m.timestamp || '';
@@ -642,6 +715,26 @@ function updateMetrics(m) {
   pill.className   = 'status-pill' + (m.action_required ? ' danger' : '');
 }
 
+// ── Counter display config — correlates CSV camera names with zones.json ─
+// Display order (user-specified): Check-in · Security · Waiting Halls · Gate A
+const COUNTER_ORDER = ['Arrivals Hall', 'Security', 'Departures', 'Gate A'];
+
+// Maps CSV/engine camera name → { display name, zone subtitle, zone color }
+const COUNTER_DISPLAY = {
+  'Arrivals Hall': { name: 'Check-in',      sub: 'Check-in Points C1–C10',      color: '#ca8a04' },
+  'Security':      { name: 'Security',      sub: 'Security Points S1–S4',       color: '#dc2626' },
+  'Departures':    { name: 'Waiting Halls', sub: 'Waiting Rooms · Gates 1–6',   color: '#16a34a' },
+  'Gate A':        { name: 'Gate A',        sub: 'Boarding Gates 1–6',          color: '#2563eb' },
+};
+
+// Maps CSV camera name → short display name used in alerts + suggestions
+const CAMERA_DISPLAY_NAMES = {
+  'Arrivals Hall': 'Check-in',
+  'Security':      'Security',
+  'Departures':    'Waiting Halls',
+  'Gate A':        'Gate A',
+};
+
 // ── Counter cards ────────────────────────────────────────────────────────
 function riskColor(r) {
   return r === 'High' ? 'var(--high)' : r === 'Medium' ? 'var(--med)' : 'var(--low)';
@@ -649,28 +742,42 @@ function riskColor(r) {
 
 function renderCounters(counters) {
   const grid = document.getElementById('counters-grid');
-  // Keep existing cards and update in-place to avoid flicker
-  if (grid.children.length !== counters.length) {
+
+  // Sort counters into user-specified order: Check-in, Security, Waiting Halls, Gate A
+  const ordered = COUNTER_ORDER.map(id => counters.find(c => c.id === id)).filter(Boolean);
+  const extras  = counters.filter(c => !COUNTER_ORDER.includes(c.id));
+  const sorted  = [...ordered, ...extras];
+
+  // Rebuild skeleton only when count changes
+  if (grid.children.length !== sorted.length) {
     grid.innerHTML = '';
-    counters.forEach((_, i) => {
+    sorted.forEach((_, i) => {
       const el = document.createElement('div');
       el.className = 'counter-card';
       el.id = `counter-${i}`;
       grid.appendChild(el);
     });
   }
-  counters.forEach((c, i) => {
-    const el = document.getElementById(`counter-${i}`);
+
+  sorted.forEach((c, i) => {
+    const el   = document.getElementById(`counter-${i}`);
+    const disp = COUNTER_DISPLAY[c.id] || { name: c.id, sub: c.type || '', color: 'var(--accent)' };
     el.className = `counter-card risk-${c.risk_level}`;
-    const qmax = 25; // visual max for bar
-    const qpct = Math.min(100, ((c.queue_size || 0) / qmax) * 100);
+    const qmax     = 25; // visual capacity cap
+    const qpct     = Math.min(100, ((c.queue_size || 0) / qmax) * 100);
     const barColor = riskColor(c.risk_level);
 
     el.innerHTML = `
-      <div class="counter-name">${c.id}</div>
-      <div class="counter-type">${c.type}</div>
-      <span class="risk-badge ${c.risk_level}">${c.risk_level || '—'}</span>
-      <div class="queue-bar-wrap">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <div class="counter-name">${disp.name}</div>
+        <span class="risk-badge ${c.risk_level}" style="margin-left:auto">${c.risk_level || '—'}</span>
+      </div>
+      <div class="counter-type">${disp.sub}</div>
+      <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--muted);margin-bottom:2px;margin-top:6px">
+        <span>Queue fill <span style="opacity:.6">(cap.&nbsp;25)</span></span>
+        <span style="color:${barColor};font-weight:700">${qpct.toFixed(0)}%</span>
+      </div>
+      <div class="queue-bar-wrap" title="Queue fill vs visual capacity (25 pax)">
         <div class="queue-bar" style="width:${qpct}%;background:${barColor}"></div>
       </div>
       <div class="counter-stats">
@@ -779,9 +886,7 @@ function renderFlights(flights) {
   `}).join('');
 }
 
-// Scene analysis removed – AI Zone Alerts now show inline in the bottom row
-
-// ── Warnings & Suggestions (reads live data) ─────────────────────────────
+// ── Warnings & Suggestions (reads live counter + alert data) ─────────────
 const optIcons = {
   'Reallocate Staff':         '👥',
   'Open Special Items Lane':  '🧳',
@@ -794,92 +899,155 @@ function impactClass(pct) {
   return 'priority-low';
 }
 
-// Enrich engine suggestions with live counter/alert context
+// Enrich engine suggestions with rich live counter/alert context
 function enrichOptDetails(o, counters, alerts) {
-  const base   = o.details || '';
-  const action = o.action  || '';
+  const base = o.details || '';
 
-  // Pull live numbers for relevant counters mentioned in details
+  // Pull live numbers for all counters specifically mentioned in the suggestion
   const mentioned = counters.filter(c =>
     base.toLowerCase().includes(c.id.toLowerCase())
   );
   let liveCtx = '';
   if (mentioned.length) {
-    liveCtx = mentioned.map(c =>
-      `${c.id}: queue ${c.queue_size} pax @ ${(c.flow_rate||0).toFixed(1)}/min [${c.risk_level}]`
-    ).join(' · ');
+    liveCtx = mentioned.map(c => {
+      const ttb = (c.flow_rate > 0 && c.queue_size > 0)
+        ? ` (est. ${Math.round(c.queue_size / Math.max(c.flow_rate, 0.1))} min to clear)`
+        : '';
+      return `${c.id}: ${c.queue_size} pax · ${(c.flow_rate||0).toFixed(1)} pax/min · [${c.risk_level}]${ttb}`;
+    }).join(' | ');
+  } else {
+    // No specific counter — summarise all high/medium counters as context
+    const concerning = counters.filter(c => c.risk_level === 'High' || c.risk_level === 'Medium');
+    if (concerning.length) {
+      liveCtx = concerning.map(c => `${c.id} [${c.risk_level}]: ${c.queue_size} pax`).join(', ');
+    }
   }
 
-  // Pull RED alerts if this is a high-priority suggestion
+  // Add RED alert context for high-priority suggestions
   const redAlerts = alerts.filter(a => a.severity === 'RED');
   let alertCtx = '';
-  if (redAlerts.length && o.estimated_impact >= 40) {
-    alertCtx = redAlerts.map(a => `⚠ ${a.camera}: ${a.top_action || a.explanation.substring(0, 80)}`).join(' | ');
+  if (redAlerts.length && (o.estimated_impact || 0) >= 30) {
+    alertCtx = redAlerts.map(a =>
+      `⚠ ${a.camera} (risk ${(a.risk_score||0).toFixed(0)}%): ${a.top_action || a.explanation.substring(0, 90)}`
+    ).join(' | ');
   }
 
-  // Compose enriched details
   let enriched = base;
-  if (liveCtx) enriched += ` — Live: ${liveCtx}.`;
-  if (alertCtx) enriched += ` Active alerts: ${alertCtx}`;
-
+  if (liveCtx)  enriched += ` Live status — ${liveCtx}.`;
+  if (alertCtx) enriched += ` Active critical alerts: ${alertCtx}.`;
   return enriched;
 }
 
 function renderOpts(opts) {
   const el = document.getElementById('opt-list');
 
-  // Gather current live data
   const counters = _lastCounters || [];
   const alerts   = _curAlerts   || [];
 
-  // Synthesize extra warnings from live RED alerts not already covered
+  // ── 1. Synthesise critical/elevated warnings directly from alert data ────
   const extraWarnings = [];
-  const redAlerts = alerts.filter(a => a.severity === 'RED');
+  const redAlerts   = alerts.filter(a => a.severity === 'RED');
+  const amberAlerts = alerts.filter(a => a.severity === 'AMBER' && (a.risk_score || 0) >= 45);
+
   redAlerts.forEach(a => {
-    const alreadyCovered = opts.some(o =>
+    const covered = opts.some(o =>
       (o.details || '').toLowerCase().includes(a.camera.toLowerCase())
     );
-    if (!alreadyCovered) {
-      extraWarnings.push({
-        action: `Critical Disruption – ${a.camera}`,
-        details: `${a.explanation} — ${a.top_action || 'Immediate supervisor intervention required.'}`,
-        estimated_impact: Math.round(a.risk_score || 75),
-        actionable: true,
-        _synthetic: true,
-        _severity: 'RED',
-      });
-    }
+    if (covered) return;
+    const ttbMin = (a.time_to_breach_s > 0 && a.time_to_breach_s < 9000)
+      ? ` Time to capacity breach: ~${Math.ceil(a.time_to_breach_s / 60)} min.` : '';
+    const qpPct  = a.queue_pressure   > 0 ? ` Queue pressure: ${(a.queue_pressure  * 100).toFixed(0)}%.`  : '';
+    const fdPct  = a.flow_degradation > 0 ? ` Flow degradation: ${(a.flow_degradation * 100).toFixed(0)}% below baseline.` : '';
+    extraWarnings.push({
+      action:           `🆘 Critical Disruption — ${a.camera}`,
+      details:          `${a.explanation}${qpPct}${fdPct}${ttbMin}${a.top_action ? ' Required action: ' + a.top_action + '.' : ''}`,
+      estimated_impact: Math.round(a.risk_score || 75),
+      actionable:       true,
+      _synthetic:       true,
+      _severity:        'RED',
+    });
   });
-  const amberAlerts = alerts.filter(a => a.severity === 'AMBER' && a.risk_score >= 50);
+
   amberAlerts.forEach(a => {
-    const alreadyCovered = opts.some(o =>
+    const covered = opts.some(o =>
       (o.details || '').toLowerCase().includes(a.camera.toLowerCase())
     ) || extraWarnings.some(w => w.action.includes(a.camera));
-    if (!alreadyCovered) {
-      extraWarnings.push({
-        action: `Elevated Risk – ${a.camera}`,
-        details: `${a.explanation}${a.top_action ? ' — ' + a.top_action : ''}`,
-        estimated_impact: Math.round(a.risk_score || 40),
-        actionable: false,
-        _synthetic: true,
-        _severity: 'AMBER',
-      });
-    }
+    if (covered) return;
+    const ttbMin = (a.time_to_breach_s > 0 && a.time_to_breach_s < 9000)
+      ? ` Estimated ${Math.ceil(a.time_to_breach_s / 60)} min to threshold breach if unaddressed.` : '';
+    extraWarnings.push({
+      action:           `⚠️ Elevated Risk — ${a.camera}`,
+      details:          `${a.explanation}${ttbMin}${a.top_action ? ' Suggested: ' + a.top_action + '.' : ''} Risk score: ${(a.risk_score||0).toFixed(0)}% — monitor closely for escalation.`,
+      estimated_impact: Math.round(a.risk_score || 40),
+      actionable:       false,
+      _synthetic:       true,
+      _severity:        'AMBER',
+    });
   });
 
-  const allOpts = [...extraWarnings, ...opts];
+  // ── 2. Generate observations from High/Medium-risk counters ──────────────
+  const counterWarnings = [];
+  const highCtrs = counters.filter(c => c.risk_level === 'High');
+  const medCtrs  = counters.filter(c => c.risk_level === 'Medium');
+
+  highCtrs.forEach(c => {
+    const alreadyIn = [...extraWarnings, ...opts].some(w =>
+      (w.action + ' ' + (w.details || '')).toLowerCase().includes(c.id.toLowerCase())
+    );
+    if (alreadyIn) return;
+    const satMin   = c.flow_rate > 0 ? Math.round((25 - c.queue_size) / Math.max(c.flow_rate, 0.1)) : null;
+    const satText  = satMin !== null
+      ? (satMin <= 0
+          ? 'Queue is at or above visual capacity — overflow risk is active. '
+          : `At current flow rate, queue saturates in ~${satMin} min. `)
+      : '';
+    const spcText  = c.special_items > 0
+      ? `${c.special_items} special-handling item${c.special_items > 1 ? 's' : ''} adding processing overhead. ` : '';
+    counterWarnings.push({
+      action:           `Queue Overload — ${c.id}`,
+      details:          `${c.id} (${c.type}) has ${c.queue_size} pax queued with only ${(c.flow_rate||0).toFixed(1)} pax/min throughput — `
+                      + `below the 1.5 pax/min operational threshold. ${satText}${spcText}`
+                      + `Throughput: ${c.throughput ?? '—'}/hr. Forecast: ${c.forecast || 'degrading'}. `
+                      + `Immediate agent redeployment or counter opening required to prevent cascade delays.`,
+      estimated_impact: 55,
+      actionable:       true,
+      _synthetic:       true,
+      _severity:        'RED',
+    });
+  });
+
+  medCtrs.slice(0, 2).forEach(c => {
+    const alreadyIn = [...extraWarnings, ...counterWarnings, ...opts].some(w =>
+      (w.action + ' ' + (w.details || '')).toLowerCase().includes(c.id.toLowerCase())
+    );
+    if (alreadyIn) return;
+    counterWarnings.push({
+      action:           `Monitor — ${c.id}`,
+      details:          `${c.id} (${c.type}) is operating at medium capacity: ${c.queue_size} pax in queue, `
+                      + `${(c.flow_rate||0).toFixed(1)} pax/min flow rate. `
+                      + `Avg baggage: ${(c.avg_baggage||0).toFixed(1)} items/pax${c.special_items > 0 ? `, ${c.special_items} special items` : ''}. `
+                      + `Forecast: ${c.forecast || 'stable but elevated — reassess in 5 min'}. `
+                      + `Pre-emptive staffing adjustment recommended to avoid escalation to HIGH risk.`,
+      estimated_impact: 25,
+      actionable:       false,
+      _synthetic:       true,
+      _severity:        'AMBER',
+    });
+  });
+
+  const allOpts = [...extraWarnings, ...counterWarnings, ...opts];
 
   if (!allOpts.length) {
-    el.innerHTML = '<div class="no-opt">✓ No warnings or suggestions at this time. All zones operating within normal parameters.</div>';
+    el.innerHTML = '<div class="no-opt">✓ All zones operating within normal parameters. No warnings or interventions required at this time.</div>';
     return;
   }
 
   el.innerHTML = allOpts.map(o => {
-    const enriched = o._synthetic ? o.details : enrichOptDetails(o, counters, alerts);
-    const icon = o._severity === 'RED' ? '🆘'
-               : o._severity === 'AMBER' ? '⚠️'
-               : (optIcons[o.action] || '💡');
-    const cardClass = o._severity === 'RED' ? 'priority-high'
+    const enriched  = o._synthetic ? o.details : enrichOptDetails(o, counters, alerts);
+    const icon      = o._severity === 'RED'   ? '🆘'
+                    : o._severity === 'AMBER' ? '⚠️'
+                    : (optIcons[o.action] || '💡');
+    const cardClass = o._severity === 'RED'   ? 'priority-high'
                     : o._severity === 'AMBER' ? 'priority-medium'
                     : impactClass(o.estimated_impact || 0);
     return `
@@ -965,6 +1133,22 @@ fetch('/api/mock/snapshots')
     buildTimeline();
     connectSSE();
   });
+
+// ── View switching ────────────────────────────────────────────────
+function showView(id) {
+  document.getElementById('view-map').classList.toggle('hidden', id !== 'view-map');
+  document.getElementById('view-dashboard').classList.toggle('hidden', id !== 'view-dashboard');
+  const btn = document.getElementById('btn-nav');
+  btn.textContent    = (id === 'view-map') ? 'Enter Dashboard' : 'Back to Map';
+  btn.dataset.target = (id === 'view-map') ? 'view-dashboard'  : 'view-map';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (id === 'view-map') { setTimeout(() => window.dispatchEvent(new Event('resize')), 60); }
+}
+
+const _btnNav = document.getElementById('btn-nav');
+_btnNav.dataset.target = 'view-dashboard';
+_btnNav.addEventListener('click', () => showView(_btnNav.dataset.target));
+document.getElementById('logo-home').addEventListener('click', () => showView('view-map'));
 </script>
 
 <!-- ── 3D FLOOR PLAN (Three.js ES module) ──────────────────────────────── -->
@@ -992,15 +1176,16 @@ css2dRenderer.domElement.style.pointerEvents = 'none';  // overlay itself non-bl
 wrap.appendChild(css2dRenderer.domElement);
 
 const camera = new THREE.PerspectiveCamera(45, 1, 0.01, 500);
-camera.position.set(0, 2.8, 3.5);
+camera.position.set(0, 1.8, 2.4);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping    = true;
-controls.dampingFactor    = 0.08;
+controls.dampingFactor    = 0.05;
 controls.minDistance      = 0.5;
 controls.maxDistance      = 12;
 controls.maxPolarAngle    = Math.PI / 2.05;
 controls.target.set(0, 0, 0);
+controls.zoomSpeed        = 0.7;
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x080d18);
@@ -1227,7 +1412,7 @@ wrap.addEventListener('click',       onPointerClick);
 
 // ── Reset view button ─────────────────────────────────────────────────────
 document.getElementById('btn-reset-cam').addEventListener('click', () => {
-  camera.position.set(0, 2.8, 3.5);
+  camera.position.set(0, 1.8, 2.4);
   controls.target.set(0, 0, 0);
   controls.update();
 });
@@ -1236,12 +1421,15 @@ document.getElementById('btn-reset-cam').addEventListener('click', () => {
 function resize() {
   const W = wrap.clientWidth;
   const H = wrap.clientHeight;
+  if (W === 0 || H === 0) return; // skip while hidden
   renderer.setSize(W, H);
   css2dRenderer.setSize(W, H);
   camera.aspect = W / H;
   camera.updateProjectionMatrix();
 }
 new ResizeObserver(resize).observe(wrap);
+// Also re-check when the non-module script broadcasts a window resize
+window.addEventListener('resize', resize);
 resize();
 
 // ── Render loop ──────────────────────────────────────────────────────────
