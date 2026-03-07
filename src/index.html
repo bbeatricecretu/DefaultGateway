@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>Airport MTMCT System</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 20px; background-color: #f0f2f5; display: flex; gap: 20px; }
+        .map-container { position: relative; width: 60%; background: white; border-radius: 10px; padding: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .map-image { width: 100%; border-radius: 5px; display: block; }
+        .camera-marker { position: absolute; width: 20px; height: 20px; background-color: #ff3b30; border-radius: 50%; border: 3px solid white; cursor: pointer; transform: translate(-50%, -50%); transition: transform 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .camera-marker:hover { transform: translate(-50%, -50%) scale(1.3); background-color: #007aff; }
+        .camera-marker.active { background-color: #34c759; }
+        
+        .feeds-container { width: 40%; display: flex; flex-direction: column; gap: 20px; }
+        .feed-box { background: white; border-radius: 10px; padding: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .feed-box h3 { margin-top: 0; color: #333; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .video-stream { width: 100%; background: #000; border-radius: 5px; min-height: 200px; object-fit: cover; }
+        
+        .empty-state { text-align: center; color: #888; padding: 40px 0; font-style: italic; }
+    </style>
+</head>
+<body>
+
+    <div class="map-container">
+        <img id="airport-map" class="map-image" src="" alt="Harta Aeroport">
+        <div id="markers-layer"></div>
+    </div>
+
+    <div class="feeds-container">
+        <div class="feed-box">
+            <h3 id="main-cam-title">Camera Selectată</h3>
+            <img id="main-cam-feed" class="video-stream" style="display: none;">
+            <div id="main-cam-empty" class="empty-state">Selectați o cameră de pe hartă</div>
+        </div>
+        
+        <div class="feed-box">
+            <h3 id="adj-cam-title">Camere Adiacente (Urmărire flux)</h3>
+            <div id="adjacent-feeds-wrapper">
+                <div class="empty-state">Așteptare selecție...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let systemConfig = {};
+
+        // Încărcăm configurația de la server
+        fetch('/api/config')
+            .then(response => response.json())
+            .then(data => {
+                systemConfig = data;
+                document.getElementById('airport-map').src = data.harta_img;
+                renderMarkers();
+            });
+
+        function renderMarkers() {
+            const layer = document.getElementById('markers-layer');
+            
+            for (const [camId, details] of Object.entries(systemConfig.camere)) {
+                const marker = document.createElement('div');
+                marker.className = 'camera-marker';
+                marker.style.left = details.x + '%';
+                marker.style.top = details.y + '%';
+                marker.title = camId;
+                
+                marker.onclick = () => selectCamera(camId, marker);
+                layer.appendChild(marker);
+            }
+        }
+
+        function selectCamera(camId, clickedMarker) {
+            // Resetăm culorile markerelor
+            document.querySelectorAll('.camera-marker').forEach(m => m.classList.remove('active'));
+            clickedMarker.classList.add('active');
+
+            // 1. Setăm camera principală
+            document.getElementById('main-cam-title').innerText = "LIVE: " + camId;
+            const mainFeed = document.getElementById('main-cam-feed');
+            mainFeed.src = '/video_feed/' + camId;
+            mainFeed.style.display = 'block';
+            document.getElementById('main-cam-empty').style.display = 'none';
+
+            // 2. Setăm camerele adiacente
+            const adjWrapper = document.getElementById('adjacent-feeds-wrapper');
+            adjWrapper.innerHTML = ''; // Curățăm lista veche
+            
+            const adjacents = systemConfig.camere[camId].adiacente;
+            
+            if (adjacents.length === 0) {
+                adjWrapper.innerHTML = '<div class="empty-state">Nu există camere adiacente.</div>';
+                return;
+            }
+
+            adjacents.forEach(adjCamId => {
+                const wrapper = document.createElement('div');
+                wrapper.style.marginBottom = '15px';
+                
+                const title = document.createElement('h4');
+                title.innerText = "Vecin: " + adjCamId;
+                title.style.margin = '0 0 5px 0';
+                title.style.fontSize = '14px';
+                title.style.color = '#555';
+                
+                const img = document.createElement('img');
+                img.className = 'video-stream';
+                img.src = '/video_feed/' + adjCamId;
+                
+                wrapper.appendChild(title);
+                wrapper.appendChild(img);
+                adjWrapper.appendChild(wrapper);
+            });
+        }
+    </script>
+</body>
+</html>
