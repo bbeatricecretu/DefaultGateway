@@ -1,0 +1,66 @@
+{
+  "scene_summary": "The video shows a busy airport terminal with a large number of passengers walking around, checking in, and waiting in queues. The area appears to be crowded, with people moving in various directions.",
+  "passenger_flow": {
+    "visible_passenger_count": "unknown",
+    "flow_pattern": "unknown",
+    "crowd_density": "high",
+    "movement_intensity": "chaotic"
+  },
+  "contributing_factors": [
+    {
+      "factor": "high crowd density",
+      "impact_on_flow": "causing congestion and slow movement"
+    },
+    {
+      "factor": "various queues",
+      "impact_on_flow": "creating bottlenecks and delays"
+    },
+    {
+      "factor": "baggage presence",
+      "impact_on_flow": "slowing down movement due to bulky items"
+    },
+    {
+      "factor": "strollers and wheelchairs",
+      "impact_on_flow": "requiring additional space and slowing down movement"
+    }
+  ],
+  "staff_workflow": {
+    "staff_presence": "unknown",
+    "workflow_assessment": "unknown",
+    "impact_on_congestion": "unknown"
+  },
+  "gateway_congestion_prediction": {
+    "risk_level": "high",
+    "confidence": "high",
+    "explanation": "The high crowd density, various queues, and presence of bulky items suggest a high risk of congestion."
+  },
+  "recommended_solutions": [
+    {
+      "solution": "open additional lanes",
+      "reason": "to reduce congestion and allow smoother movement"
+    },
+    {
+      "solution": "separate bulky baggage flow",
+      "reason": "to minimize delays caused by bulky items"
+    },
+    {
+      "solution": "create stroller/wheelchair-assisted path",
+      "reason": "to provide a dedicated space for passengers with mobility constraints"
+    }
+  ],
+  "explainability": [
+    {
+      "conclusion": "The area is crowded",
+      "visible_evidence": "many people are present, and the space is filled with passengers."
+    },
+    {
+      "conclusion": "There are various queues",
+      "visible_evidence": "people are lined up at different check-in counters and gates."
+    },
+    {
+      "conclusion": "Baggage presence is slowing down movement",
+      "visible_evidence": "bulky items are visible, causing delays."
+    }
+  ]
+}
+==============================

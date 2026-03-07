@@ -41,12 +41,16 @@ import os
 from datetime import datetime, timedelta
 from typing import Any, Dict
 
-from flask import Flask, jsonify, Response
+import json
+import time
+
+from flask import Flask, jsonify, render_template, Response, stream_with_context
 from flask_cors import CORS
 
 from engine import Engine
 from models import Counter, Flight
 from scheduler import ScheduleManager
+import mock_snapshot4
 
 # ---------------------------------------------------------------------------
 # App factory
@@ -79,18 +83,28 @@ def _build_engine() -> Engine:
     """
     engine = Engine()
 
-    # ---- Counters -----------------------------------------------------------
-    engine.add_counter(Counter(counter_id="03", counter_type="Int'l"))
-    engine.add_counter(Counter(counter_id="04", counter_type="Domestic"))
+    # ---- Counters (keyed by camera name to match snapshot4 mock data) --------
+    for cam, cam_type in mock_snapshot4.COUNTER_TYPES.items():
+        engine.add_counter(Counter(counter_id=cam, counter_type=cam_type))
 
     # ---- Flights ------------------------------------------------------------
+    # Scene-level risk / recommendations from the AI analysis are used to
+    # populate the expectation field so suggestions are grounded in real data.
+    _scene = mock_snapshot4.get_scene_analysis()
+    _risk  = _scene.get("gateway_congestion_prediction", {})
+    _solutions = _scene.get("recommended_solutions", [])
+    _solution_text = "; ".join(
+        s.get("solution", "") for s in _solutions[:2]
+    ) if _solutions else "monitor closely"
+
     dl789 = Flight(
         flight_id="DL789",
         status="DEPARTS 45M",
         minutes_to_departure=45.0,
         expectation=(
-            "High inbound transfer volume detected. "
-            "Expecting +30 pax at Counter 04 in 15 mins."
+            f"Scene risk: {_risk.get('risk_level', 'unknown')} "
+            f"(confidence: {_risk.get('confidence', 'unknown')}). "
+            f"Suggested actions: {_solution_text}."
         ),
     )
     ua456 = Flight(
@@ -98,7 +112,7 @@ def _build_engine() -> Engine:
         status="LANDED",
         minutes_to_departure=None,
         expectation=(
-            "Inbound UA456 passengers expected to join Counter 04 queue "
+            "Inbound UA456 passengers expected to join Arrivals Hall queue "
             "in approximately 20 minutes."
         ),
     )
@@ -112,15 +126,15 @@ def _build_engine() -> Engine:
     # DL789: check-in open from 2 h ago, closes in 20 min → ACTIVE
     scheduler.register(
         flight_id="DL789",
-        counter_ids=["03"],
+        counter_ids=["Gate A", "Departures"],
         start_time=now - timedelta(hours=2),
         end_time=now + timedelta(minutes=20),
     )
 
-    # UA456: check-in closed 1 h ago → EXPIRED
+    # UA456: landed, check-in closed 1 h ago → EXPIRED
     scheduler.register(
         flight_id="UA456",
-        counter_ids=["04"],
+        counter_ids=["Arrivals Hall"],
         start_time=now - timedelta(hours=5),
         end_time=now - timedelta(hours=1),
     )
@@ -155,19 +169,34 @@ def _get_payloads() -> Dict[str, Dict[str, Any]]:
 
     if source == "mock":
         return {
-            "03": {
+            "Gate A": {
                 "queue_size":    18,
                 "flow_rate":     1.2,
                 "avg_baggage":   2.8,
                 "special_items": 4,
             },
-            "04": {
+            "Security": {
+                "queue_size":    12,
+                "flow_rate":     2.1,
+                "avg_baggage":   1.5,
+                "special_items": 3,
+            },
+            "Arrivals Hall": {
                 "queue_size":    2,
                 "flow_rate":     3.5,
                 "avg_baggage":   1.1,
                 "special_items": 0,
             },
+            "Departures": {
+                "queue_size":    7,
+                "flow_rate":     2.0,
+                "avg_baggage":   2.0,
+                "special_items": 1,
+            },
         }
+
+    if source == "snapshot4":
+        return mock_snapshot4.get_snapshot_payload()  # cycles automatically
 
     if source == "http":
         import json
@@ -186,7 +215,7 @@ def _get_payloads() -> Dict[str, Dict[str, Any]]:
 
     raise ValueError(
         f"Unsupported DATA_SOURCE {source!r}. "
-        "Valid options: 'mock', 'http'."
+        "Valid options: 'mock', 'snapshot4', 'http'."
     )
 
 
@@ -238,6 +267,119 @@ def dashboard() -> Response:
 
     except (RuntimeError, ValueError) as exc:
         return jsonify({"error": str(exc)}), 500
+
+
+# ---------------------------------------------------------------------------
+# Live SSE stream  –  pushes one full dashboard update every 3 s,
+# cycling through all snapshot4 frames in order.
+# ---------------------------------------------------------------------------
+
+@app.get("/api/stream")
+def snapshot_stream() -> Response:
+    """
+    GET /api/stream  (Server-Sent Events)
+
+    Streams a new dashboard snapshot every 3 seconds, cycling through all
+    snapshot4 frames.  Each event is a full DashboardDTO JSON object with
+    two extra fields injected by the server:
+
+        ``_frame``  – 0-based index of the current frame
+        ``_total``  – total number of available frames
+
+    The browser dashboard connects to this endpoint via ``EventSource`` and
+    updates itself on every message without a page reload.
+    """
+    def _generate():
+        idx = 0
+        while True:
+            try:
+                payload = mock_snapshot4.get_snapshot_payload(index=idx)
+                output: Dict[str, Any] = _engine.run(payload)
+                output["_frame"] = idx
+                output["_total"] = mock_snapshot4.SNAPSHOT_COUNT
+                yield f"data: {json.dumps(output)}\n\n"
+            except Exception as exc:
+                yield f"data: {{\"error\": \"{exc}\"}}\n\n"
+            idx = (idx + 1) % mock_snapshot4.SNAPSHOT_COUNT
+            time.sleep(3)
+
+    return Response(
+        stream_with_context(_generate()),
+        mimetype="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
+# ---------------------------------------------------------------------------
+# Browser dashboard
+# ---------------------------------------------------------------------------
+
+@app.get("/")
+def dashboard_ui() -> Response:
+    """Serve the live HTML dashboard."""
+    return render_template("dashboard.html")
+
+
+# ---------------------------------------------------------------------------
+# Mock / snapshot4 browsing endpoints
+# ---------------------------------------------------------------------------
+
+@app.get("/api/mock/snapshots")
+def list_snapshots() -> Response:
+    """
+    GET /api/mock/snapshots
+
+    Returns all snapshot4 frames as a list, each containing an index and
+    the 4-counter payload derived from the real AI measurements.
+
+    Response shape::
+
+        {
+          "total": 12,
+          "snapshots": [
+            {"index": 0, "counters": {"Gate A": {…}, "Security": {…}, …}},
+            …
+          ]
+        }
+    """
+    return jsonify({
+        "total":     mock_snapshot4.SNAPSHOT_COUNT,
+        "snapshots": mock_snapshot4.get_all_snapshots(),
+    }), 200
+
+
+@app.get("/api/mock/snapshot/<int:index>")
+def single_snapshot(index: int) -> Response:
+    """
+    GET /api/mock/snapshot/<index>
+
+    Run the full engine pipeline using one specific snapshot4 frame
+    (0-based index, wraps around if out of range).
+
+    Response body is identical to ``GET /api/dashboard`` so the frontend
+    can replay any captured frame without polling.
+    """
+    try:
+        payload = mock_snapshot4.get_snapshot_payload(index=index)
+        output: Dict[str, Any] = _engine.run(payload)
+        return jsonify(output), 200
+    except (RuntimeError, ValueError) as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
+@app.get("/api/mock/scene")
+def scene_analysis() -> Response:
+    """
+    GET /api/mock/scene
+
+    Returns the AI scene analysis from ``message (1).txt``:
+    crowd density, passenger flow, contributing factors, risk prediction,
+    recommended solutions, and explainability notes.
+    """
+    return jsonify(mock_snapshot4.get_scene_analysis()), 200
 
 
 # ---------------------------------------------------------------------------

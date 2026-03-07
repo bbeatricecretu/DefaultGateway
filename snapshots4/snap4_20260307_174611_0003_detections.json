@@ -1,0 +1,78 @@
+{
+  "snapshot_num": 3,
+  "timestamp_s": 16.7,
+  "detections": [
+    {
+      "type": "person",
+      "id_label": "G:1",
+      "global_id": 1,
+      "track_id": 1,
+      "camera": "Gate A",
+      "x": 89,
+      "y": 278
+    },
+    {
+      "type": "person",
+      "id_label": "G:3",
+      "global_id": 3,
+      "track_id": 3,
+      "camera": "Gate A",
+      "x": 108,
+      "y": 269
+    },
+    {
+      "type": "person",
+      "id_label": "G:1",
+      "global_id": 1,
+      "track_id": 1,
+      "camera": "Security",
+      "x": 90,
+      "y": 278
+    },
+    {
+      "type": "person",
+      "id_label": "G:3",
+      "global_id": 3,
+      "track_id": 3,
+      "camera": "Security",
+      "x": 108,
+      "y": 269
+    },
+    {
+      "type": "person",
+      "id_label": "G:1",
+      "global_id": 1,
+      "track_id": 1,
+      "camera": "Arrivals Hall",
+      "x": 90,
+      "y": 278
+    },
+    {
+      "type": "person",
+      "id_label": "G:3",
+      "global_id": 3,
+      "track_id": 3,
+      "camera": "Arrivals Hall",
+      "x": 109,
+      "y": 269
+    },
+    {
+      "type": "person",
+      "id_label": "G:1",
+      "global_id": 1,
+      "track_id": 1,
+      "camera": "Departures",
+      "x": 90,
+      "y": 278
+    },
+    {
+      "type": "person",
+      "id_label": "G:3",
+      "global_id": 3,
+      "track_id": 3,
+      "camera": "Departures",
+      "x": 109,
+      "y": 269
+    }
+  ]
+}
