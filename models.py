@@ -509,8 +509,7 @@ class Flight:
             "id": self.id,
             "status": self.status,
             "associated_counters": self.associated_counters,
-            "description": self.risk_description,       # dashboard alias
-            "risk_description": self.risk_description,  # internal name
+            "description": self.risk_description,
             "issue": self.issue,
             "expectation": self.expectation,
             "at_risk": self.at_risk,
