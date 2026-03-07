@@ -1,0 +1,17 @@
+{
+    "harta_img": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Otopeni_Airport_Diagram.svg/800px-Otopeni_Airport_Diagram.svg.png",
+    "camere": {
+        "CAM_01": {
+            "sursa": "../datasets/fight_0001.mpeg",
+            "x": 25,
+            "y": 40,
+            "adiacente": ["CAM_02"]
+        },
+        "CAM_02": {
+            "sursa": "../datasets/fight_0001.mpeg",
+            "x": 60,
+            "y": 55,
+            "adiacente": ["CAM_01"]
+        }
+    }
+}
