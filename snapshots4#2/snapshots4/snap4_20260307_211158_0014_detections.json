@@ -1,0 +1,198 @@
+{
+  "snapshot_num": 14,
+  "timestamp_s": 109.57,
+  "detections": [
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Gate A",
+      "x": 349,
+      "y": 356
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Gate A",
+      "x": 108,
+      "y": 359
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Gate A",
+      "x": 605,
+      "y": 266
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Gate A",
+      "x": 37,
+      "y": 357
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Gate A",
+      "x": 584,
+      "y": 359
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Gate A",
+      "x": 612,
+      "y": 343
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Gate A",
+      "x": 547,
+      "y": 254
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Gate A",
+      "x": 468,
+      "y": 316
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Gate A",
+      "x": 405,
+      "y": 325
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Security",
+      "x": 263,
+      "y": 195
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Security",
+      "x": 348,
+      "y": 174
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Security",
+      "x": 190,
+      "y": 198
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Arrivals Hall",
+      "x": 410,
+      "y": 359
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Arrivals Hall",
+      "x": 516,
+      "y": 256
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Arrivals Hall",
+      "x": 587,
+      "y": 218
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Arrivals Hall",
+      "x": 70,
+      "y": 254
+    },
+    {
+      "type": "person",
+      "id_label": "G:17",
+      "global_id": 17,
+      "track_id": 2,
+      "camera": "Departures",
+      "x": 537,
+      "y": 347
+    },
+    {
+      "type": "luggage",
+      "camera": "Gate A",
+      "x": 486,
+      "y": 221,
+      "size": "small",
+      "category": "backpack"
+    },
+    {
+      "type": "luggage",
+      "camera": "Gate A",
+      "x": 22,
+      "y": 235,
+      "size": "small",
+      "category": "backpack"
+    },
+    {
+      "type": "luggage",
+      "camera": "Gate A",
+      "x": 408,
+      "y": 223,
+      "size": "small",
+      "category": "backpack"
+    },
+    {
+      "type": "luggage",
+      "camera": "Departures",
+      "x": 342,
+      "y": 205,
+      "size": "small",
+      "category": "backpack"
+    },
+    {
+      "type": "special",
+      "camera": "Gate A",
+      "x": 547,
+      "y": 209,
+      "special_type": "child"
+    }
+  ]
+}

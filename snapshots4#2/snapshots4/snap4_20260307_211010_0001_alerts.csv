@@ -1,0 +1,5 @@
+snapshot_num,timestamp_s,camera,severity,risk_score,queue_pressure,flow_degradation,clearance_delay,baggage_load,queue_trend,flow_trend,time_to_breach_s,top_action,explanation
+0,0.54,Gate A,AMBER,47.5,0.4,1.0,0.0,0.15,0.0,0.0,,Flow rate at [Gate A] is critically low — check for blockages,[Gate A] Risk 48% (AMBER). Main driver: flow rate 0.0/min (0% of baseline). 2 special-needs passenger(s) present.
+0,0.54,Security,AMBER,46.0,0.4,1.0,0.0,0.0,0.0,0.0,,Flow rate at [Security] is critically low — check for blockages,[Security] Risk 46% (AMBER). Main driver: flow rate 0.0/min (0% of baseline).
+0,0.54,Departures,AMBER,42.6,0.16,1.0,0.0,0.625,0.0,0.0,,Flow rate at [Departures] is critically low — check for blockages,[Departures] Risk 43% (AMBER). Main driver: flow rate 0.0/min (0% of baseline).
+0,0.54,Arrivals Hall,AMBER,39.6,0.24,1.0,0.0,0.0,0.0,0.0,,Flow rate at [Arrivals Hall] is critically low — check for blockages,[Arrivals Hall] Risk 40% (AMBER). Main driver: flow rate 0.0/min (0% of baseline).

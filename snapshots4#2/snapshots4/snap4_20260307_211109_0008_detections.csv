@@ -1,0 +1,21 @@
+type,id_label,global_id,track_id,camera,x,y,size,category,special_type,timestamp_s,snapshot_num
+person,G:5,5,5,Gate A,250,308,,,,60.08,8
+person,G:1,1,1,Gate A,507,357,,,,60.08,8
+person,T:-1,-1,-1,Security,367,307,,,,60.08,8
+person,T:-1,-1,-1,Security,289,351,,,,60.08,8
+person,T:-1,-1,-1,Security,104,214,,,,60.08,8
+person,T:-1,-1,-1,Security,245,206,,,,60.08,8
+person,T:-1,-1,-1,Security,531,207,,,,60.08,8
+person,T:-1,-1,-1,Security,488,194,,,,60.08,8
+person,T:-1,-1,-1,Security,376,190,,,,60.08,8
+person,T:-1,-1,-1,Security,521,187,,,,60.08,8
+person,T:-1,-1,-1,Security,194,205,,,,60.08,8
+person,T:-1,-1,-1,Security,421,241,,,,60.08,8
+person,T:-1,-1,-1,Security,403,201,,,,60.08,8
+person,G:18,18,7,Arrivals Hall,108,256,,,,60.08,8
+person,G:17,17,2,Departures,529,348,,,,60.08,8
+person,G:12,12,3,Departures,343,295,,,,60.08,8
+luggage,small,-1,-1,Gate A,357,227,small,backpack,,60.08,8
+luggage,small,-1,-1,Arrivals Hall,580,250,small,suitcase,,60.08,8
+luggage,small,-1,-1,Departures,350,207,small,backpack,,60.08,8
+special,child,-1,-1,Gate A,250,272,,,child,60.08,8

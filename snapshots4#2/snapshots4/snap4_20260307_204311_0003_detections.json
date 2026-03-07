@@ -1,0 +1,110 @@
+{
+  "snapshot_num": 3,
+  "timestamp_s": 23.71,
+  "detections": [
+    {
+      "type": "person",
+      "id_label": "G:2",
+      "global_id": 2,
+      "track_id": 2,
+      "camera": "Gate A",
+      "x": 213,
+      "y": 337
+    },
+    {
+      "type": "person",
+      "id_label": "G:3",
+      "global_id": 3,
+      "track_id": 3,
+      "camera": "Gate A",
+      "x": 103,
+      "y": 266
+    },
+    {
+      "type": "person",
+      "id_label": "G:2",
+      "global_id": 2,
+      "track_id": 2,
+      "camera": "Security",
+      "x": 214,
+      "y": 337
+    },
+    {
+      "type": "person",
+      "id_label": "G:3",
+      "global_id": 3,
+      "track_id": 3,
+      "camera": "Security",
+      "x": 103,
+      "y": 266
+    },
+    {
+      "type": "person",
+      "id_label": "G:2",
+      "global_id": 2,
+      "track_id": 2,
+      "camera": "Arrivals Hall",
+      "x": 213,
+      "y": 337
+    },
+    {
+      "type": "person",
+      "id_label": "G:3",
+      "global_id": 3,
+      "track_id": 3,
+      "camera": "Arrivals Hall",
+      "x": 103,
+      "y": 266
+    },
+    {
+      "type": "person",
+      "id_label": "G:2",
+      "global_id": 2,
+      "track_id": 2,
+      "camera": "Departures",
+      "x": 214,
+      "y": 337
+    },
+    {
+      "type": "person",
+      "id_label": "G:3",
+      "global_id": 3,
+      "track_id": 3,
+      "camera": "Departures",
+      "x": 103,
+      "y": 266
+    },
+    {
+      "type": "luggage",
+      "camera": "Gate A",
+      "x": 365,
+      "y": 309,
+      "size": "small",
+      "category": "suitcase"
+    },
+    {
+      "type": "luggage",
+      "camera": "Security",
+      "x": 365,
+      "y": 309,
+      "size": "small",
+      "category": "suitcase"
+    },
+    {
+      "type": "luggage",
+      "camera": "Arrivals Hall",
+      "x": 365,
+      "y": 309,
+      "size": "small",
+      "category": "suitcase"
+    },
+    {
+      "type": "luggage",
+      "camera": "Departures",
+      "x": 365,
+      "y": 309,
+      "size": "small",
+      "category": "suitcase"
+    }
+  ]
+}

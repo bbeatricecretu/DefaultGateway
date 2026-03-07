@@ -1,0 +1,5 @@
+snapshot_num,timestamp_s,camera,severity,risk_score,queue_pressure,flow_degradation,clearance_delay,baggage_load,queue_trend,flow_trend,time_to_breach_s,top_action,explanation
+6,77.73,Gate A,AMBER,38.5,0.04,0.7,0.298,1.0,-0.298,0.405,,High baggage load at [Gate A] — activate dedicated bag-check lane,[Gate A] Risk 39% (AMBER). Main driver: flow rate 3.0/min (30% of baseline).
+6,77.73,Security,AMBER,38.5,0.04,0.7,0.298,1.0,-0.214,0.405,,High baggage load at [Security] — activate dedicated bag-check lane,[Security] Risk 39% (AMBER). Main driver: flow rate 3.0/min (30% of baseline).
+6,77.73,Arrivals Hall,AMBER,38.5,0.04,0.7,0.298,1.0,-0.298,0.405,,High baggage load at [Arrivals Hall] — activate dedicated bag-check lane,[Arrivals Hall] Risk 39% (AMBER). Main driver: flow rate 3.0/min (30% of baseline).
+6,77.73,Departures,AMBER,38.5,0.04,0.7,0.298,1.0,-0.298,0.405,,High baggage load at [Departures] — activate dedicated bag-check lane,[Departures] Risk 39% (AMBER). Main driver: flow rate 3.0/min (30% of baseline).

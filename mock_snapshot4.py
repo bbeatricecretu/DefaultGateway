@@ -1,16 +1,17 @@
 """
 mock_snapshot4.py – Snapshot4 Mock-Data Adapter
 =================================================
-Loads the real AI-measured data produced by the snapshots4 session and
+Loads the real AI-measured data produced by the snapshots4#2 session and
 exposes it in the exact shape the AeroVision Engine expects for
 ``_get_payloads()``.
 
 Data sources
 ------------
-snapshots4/kpis.jsonl
+snapshots4#2/snapshots4/kpis.jsonl
     One JSON record per line.  Each record represents one camera's KPIs
-    at a given moment in the video.  Records with the same
-    ``(snapshot_num, timestamp_s)`` belong to the same "frame".
+    at a given moment in the video.  Records sharing the same
+    ``snapshot_num`` are collapsed into a single frame (last value per
+    camera wins), giving 15 distinct frames.
 
 message (1).txt
     AI-generated scene analysis (crowd density, risk, contributing
@@ -47,14 +48,14 @@ from __future__ import annotations
 
 import json
 import os
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
-_KPIS_PATH = os.path.join(_HERE, "snapshots4", "kpis.jsonl")
+_KPIS_PATH = os.path.join(_HERE, "snapshots4#2", "snapshots4", "kpis.jsonl")
 _SCENE_PATH = os.path.join(_HERE, "message (1).txt")
 
 # Cameras that map to individual counters (TERMINAL is the aggregate, skip it)
@@ -79,9 +80,10 @@ def _load_kpis() -> List[Dict[str, Dict[str, Any]]]:
     """
     Parse kpis.jsonl into an ordered list of per-frame payload dicts.
 
-    Duplicate ``(snapshot_num, timestamp_s)`` combinations that appear
-    because multiple video runs were appended to the same file are
-    deduplicated: only the first occurrence of each unique pair is kept.
+    Deduplicates by ``snapshot_num`` only: multiple timestamp entries for
+    the same snapshot (common in snapshots4#2) are collapsed into one
+    frame by keeping the last value seen per camera.  Frames that don't
+    contain data for all 4 counters are discarded.
 
     Returns:
         Ordered list of dicts shaped as::
@@ -93,9 +95,8 @@ def _load_kpis() -> List[Dict[str, Dict[str, Any]]]:
               "Departures":    {…},
             }
     """
-    # Use an ordered dict keyed by (snapshot_num, timestamp_s) to preserve
-    # order and deduplicate across video-run boundaries.
-    frames: Dict[Tuple[int, float], Dict[str, Dict[str, Any]]] = {}
+    # Accumulate per snapshot_num; last record for each camera wins.
+    per_snap: Dict[int, Dict[str, Dict[str, Any]]] = {}
 
     with open(_KPIS_PATH, "r") as fh:
         for raw in fh:
@@ -111,28 +112,25 @@ def _load_kpis() -> List[Dict[str, Dict[str, Any]]]:
             if camera not in COUNTER_CAMERAS:
                 continue
 
-            key: Tuple[int, float] = (
-                int(rec["snapshot_num"]),
-                float(rec["timestamp_s"]),
-            )
-            if key not in frames:
-                frames[key] = {}
+            snap_num: int = int(rec["snapshot_num"])
+            if snap_num not in per_snap:
+                per_snap[snap_num] = {}
 
             # Flow rate must be > 0 for Queue not to raise ValueError
             flow = max(float(rec.get("flow_rate_per_min", 1.0)), 0.1)
 
-            frames[key][camera] = {
+            per_snap[snap_num][camera] = {
                 "queue_size":    int(rec["queue_size"]),
                 "flow_rate":     flow,
                 "avg_baggage":   float(rec.get("avg_baggage_per_pax", 0.0)),
                 "special_items": int(rec.get("total_specials", 0)),
             }
 
-    # Only keep frames that contain data for all 4 cameras (complete frames)
+    # Return only complete frames, ordered by snapshot_num
     complete = [
-        payload
-        for payload in frames.values()
-        if COUNTER_CAMERAS.issubset(payload.keys())
+        per_snap[k]
+        for k in sorted(per_snap.keys())
+        if COUNTER_CAMERAS.issubset(per_snap[k].keys())
     ]
     return complete
 

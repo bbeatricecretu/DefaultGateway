@@ -1,0 +1,13 @@
+type,id_label,global_id,track_id,camera,x,y,size,category,special_type,timestamp_s,snapshot_num
+person,G:1,1,1,Gate A,102,278,,,,77.73,7
+person,G:1,1,1,Security,103,278,,,,77.73,7
+person,G:1,1,1,Arrivals Hall,103,278,,,,77.73,7
+person,G:1,1,1,Departures,103,278,,,,77.73,7
+luggage,small,-1,-1,Gate A,365,309,small,suitcase,,77.73,7
+luggage,small,-1,-1,Gate A,346,303,small,suitcase,,77.73,7
+luggage,small,-1,-1,Security,365,309,small,suitcase,,77.73,7
+luggage,small,-1,-1,Security,346,303,small,suitcase,,77.73,7
+luggage,small,-1,-1,Arrivals Hall,365,309,small,suitcase,,77.73,7
+luggage,small,-1,-1,Arrivals Hall,346,303,small,suitcase,,77.73,7
+luggage,small,-1,-1,Departures,365,309,small,suitcase,,77.73,7
+luggage,small,-1,-1,Departures,346,303,small,suitcase,,77.73,7

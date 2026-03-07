@@ -1,0 +1,5 @@
+snapshot_num,timestamp_s,camera,severity,risk_score,queue_pressure,flow_degradation,clearance_delay,baggage_load,queue_trend,flow_trend,time_to_breach_s,top_action,explanation
+5,73.13,Gate A,GREEN,32.6,0.08,0.8,0.143,0.25,-0.25,0.393,,Flow rate at [Gate A] is critically low — check for blockages,[Gate A] Risk 33% (GREEN). Main driver: flow rate 2.0/min (20% of baseline).
+5,73.13,Security,GREEN,32.6,0.08,0.8,0.143,0.25,-0.143,0.393,,Flow rate at [Security] is critically low — check for blockages,[Security] Risk 33% (GREEN). Main driver: flow rate 2.0/min (20% of baseline).
+5,73.13,Arrivals Hall,GREEN,32.6,0.08,0.8,0.143,0.25,-0.25,0.393,,Flow rate at [Arrivals Hall] is critically low — check for blockages,[Arrivals Hall] Risk 33% (GREEN). Main driver: flow rate 2.0/min (20% of baseline).
+5,73.13,Departures,GREEN,32.6,0.08,0.8,0.143,0.25,-0.25,0.393,,Flow rate at [Departures] is critically low — check for blockages,[Departures] Risk 33% (GREEN). Main driver: flow rate 2.0/min (20% of baseline).

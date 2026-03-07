@@ -1,0 +1,76 @@
+[
+  {
+    "camera": "Security",
+    "severity": "AMBER",
+    "risk_score": 39.6,
+    "timestamp_s": 18.56,
+    "snapshot_num": 2,
+    "queue_pressure": 0.24,
+    "flow_degradation": 1.0,
+    "clearance_delay": 0.0,
+    "baggage_load": 0.0,
+    "queue_trend": -0.3,
+    "flow_trend": 0.0,
+    "time_to_breach_s": null,
+    "actions": [
+      "Flow rate at [Security] is critically low \u2014 check for blockages"
+    ],
+    "explanation": "[Security] Risk 40% (AMBER). Main driver: flow rate 0.0/min (0% of baseline)."
+  },
+  {
+    "camera": "Departures",
+    "severity": "AMBER",
+    "risk_score": 38.8,
+    "timestamp_s": 18.56,
+    "snapshot_num": 2,
+    "queue_pressure": 0.08,
+    "flow_degradation": 0.8,
+    "clearance_delay": 0.081,
+    "baggage_load": 1.0,
+    "queue_trend": -0.6,
+    "flow_trend": 0.5,
+    "time_to_breach_s": null,
+    "actions": [
+      "High baggage load at [Departures] \u2014 activate dedicated bag-check lane",
+      "Flow rate at [Departures] is critically low \u2014 check for blockages"
+    ],
+    "explanation": "[Departures] Risk 39% (AMBER). Main driver: flow rate 2.0/min (20% of baseline). Queue shrinking -0.6 pax/snapshot."
+  },
+  {
+    "camera": "Arrivals Hall",
+    "severity": "AMBER",
+    "risk_score": 34.3,
+    "timestamp_s": 18.56,
+    "snapshot_num": 2,
+    "queue_pressure": 0.16,
+    "flow_degradation": 0.9,
+    "clearance_delay": 0.044,
+    "baggage_load": 0.0,
+    "queue_trend": -0.7,
+    "flow_trend": 0.3,
+    "time_to_breach_s": null,
+    "actions": [
+      "Flow rate at [Arrivals Hall] is critically low \u2014 check for blockages"
+    ],
+    "explanation": "[Arrivals Hall] Risk 34% (AMBER). Main driver: flow rate 1.0/min (10% of baseline). Queue shrinking -0.7 pax/snapshot."
+  },
+  {
+    "camera": "Gate A",
+    "severity": "GREEN",
+    "risk_score": 31.9,
+    "timestamp_s": 18.56,
+    "snapshot_num": 2,
+    "queue_pressure": 0.2,
+    "flow_degradation": 0.7,
+    "clearance_delay": 0.092,
+    "baggage_load": 0.1,
+    "queue_trend": -1.0,
+    "flow_trend": 0.7,
+    "time_to_breach_s": null,
+    "actions": [
+      "Flow rate at [Gate A] is critically low \u2014 check for blockages",
+      "1 special-needs passenger(s) at [Gate A] \u2014 ensure priority lane"
+    ],
+    "explanation": "[Gate A] Risk 32% (GREEN). Main driver: flow rate 3.0/min (30% of baseline). Queue shrinking -1.0 pax/snapshot. 1 special-needs passenger(s) present."
+  }
+]

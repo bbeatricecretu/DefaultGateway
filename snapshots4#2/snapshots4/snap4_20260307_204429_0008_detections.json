@@ -1,0 +1,322 @@
+{
+  "snapshot_num": 8,
+  "timestamp_s": 94.05,
+  "detections": [
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Gate A",
+      "x": 117,
+      "y": 359
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Gate A",
+      "x": 145,
+      "y": 359
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Gate A",
+      "x": 64,
+      "y": 286
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Gate A",
+      "x": 310,
+      "y": 321
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Gate A",
+      "x": 168,
+      "y": 273
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Gate A",
+      "x": 42,
+      "y": 266
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Gate A",
+      "x": 25,
+      "y": 246
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Security",
+      "x": 117,
+      "y": 359
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Security",
+      "x": 145,
+      "y": 359
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Security",
+      "x": 64,
+      "y": 286
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Security",
+      "x": 310,
+      "y": 321
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Security",
+      "x": 168,
+      "y": 273
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Security",
+      "x": 42,
+      "y": 266
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Security",
+      "x": 25,
+      "y": 246
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Arrivals Hall",
+      "x": 117,
+      "y": 359
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Arrivals Hall",
+      "x": 145,
+      "y": 359
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Arrivals Hall",
+      "x": 64,
+      "y": 286
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Arrivals Hall",
+      "x": 310,
+      "y": 321
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Arrivals Hall",
+      "x": 168,
+      "y": 273
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Arrivals Hall",
+      "x": 42,
+      "y": 266
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Arrivals Hall",
+      "x": 25,
+      "y": 246
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Departures",
+      "x": 117,
+      "y": 359
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Departures",
+      "x": 145,
+      "y": 359
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Departures",
+      "x": 64,
+      "y": 286
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Departures",
+      "x": 310,
+      "y": 321
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Departures",
+      "x": 168,
+      "y": 273
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Departures",
+      "x": 42,
+      "y": 266
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Departures",
+      "x": 25,
+      "y": 246
+    },
+    {
+      "type": "luggage",
+      "camera": "Gate A",
+      "x": 57,
+      "y": 243,
+      "size": "small",
+      "category": "handbag"
+    },
+    {
+      "type": "luggage",
+      "camera": "Gate A",
+      "x": 365,
+      "y": 309,
+      "size": "small",
+      "category": "suitcase"
+    },
+    {
+      "type": "luggage",
+      "camera": "Security",
+      "x": 57,
+      "y": 243,
+      "size": "small",
+      "category": "handbag"
+    },
+    {
+      "type": "luggage",
+      "camera": "Security",
+      "x": 365,
+      "y": 309,
+      "size": "small",
+      "category": "suitcase"
+    },
+    {
+      "type": "luggage",
+      "camera": "Arrivals Hall",
+      "x": 57,
+      "y": 243,
+      "size": "small",
+      "category": "handbag"
+    },
+    {
+      "type": "luggage",
+      "camera": "Arrivals Hall",
+      "x": 365,
+      "y": 309,
+      "size": "small",
+      "category": "suitcase"
+    },
+    {
+      "type": "luggage",
+      "camera": "Departures",
+      "x": 57,
+      "y": 243,
+      "size": "small",
+      "category": "handbag"
+    },
+    {
+      "type": "luggage",
+      "camera": "Departures",
+      "x": 365,
+      "y": 309,
+      "size": "small",
+      "category": "suitcase"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+type,id_label,global_id,track_id,camera,x,y,size,category,special_type,timestamp_s,snapshot_num
+person,T:-1,-1,-1,Gate A,349,356,,,,109.57,14
+person,T:-1,-1,-1,Gate A,108,359,,,,109.57,14
+person,T:-1,-1,-1,Gate A,605,266,,,,109.57,14
+person,T:-1,-1,-1,Gate A,37,357,,,,109.57,14
+person,T:-1,-1,-1,Gate A,584,359,,,,109.57,14
+person,T:-1,-1,-1,Gate A,612,343,,,,109.57,14
+person,T:-1,-1,-1,Gate A,547,254,,,,109.57,14
+person,T:-1,-1,-1,Gate A,468,316,,,,109.57,14
+person,T:-1,-1,-1,Gate A,405,325,,,,109.57,14
+person,T:-1,-1,-1,Security,263,195,,,,109.57,14
+person,T:-1,-1,-1,Security,348,174,,,,109.57,14
+person,T:-1,-1,-1,Security,190,198,,,,109.57,14
+person,T:-1,-1,-1,Arrivals Hall,410,359,,,,109.57,14
+person,T:-1,-1,-1,Arrivals Hall,516,256,,,,109.57,14
+person,T:-1,-1,-1,Arrivals Hall,587,218,,,,109.57,14
+person,T:-1,-1,-1,Arrivals Hall,70,254,,,,109.57,14
+person,G:17,17,2,Departures,537,347,,,,109.57,14
+luggage,small,-1,-1,Gate A,486,221,small,backpack,,109.57,14
+luggage,small,-1,-1,Gate A,22,235,small,backpack,,109.57,14
+luggage,small,-1,-1,Gate A,408,223,small,backpack,,109.57,14
+luggage,small,-1,-1,Departures,342,205,small,backpack,,109.57,14
+special,child,-1,-1,Gate A,547,209,,,child,109.57,14

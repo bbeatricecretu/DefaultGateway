@@ -1,0 +1,74 @@
+[
+  {
+    "camera": "Gate A",
+    "severity": "GREEN",
+    "risk_score": 32.6,
+    "timestamp_s": 33.73,
+    "snapshot_num": 3,
+    "queue_pressure": 0.08,
+    "flow_degradation": 0.8,
+    "clearance_delay": 0.143,
+    "baggage_load": 0.25,
+    "queue_trend": -0.7,
+    "flow_trend": 0.7,
+    "time_to_breach_s": null,
+    "actions": [
+      "Flow rate at [Gate A] is critically low \u2014 check for blockages"
+    ],
+    "explanation": "[Gate A] Risk 33% (GREEN). Main driver: flow rate 2.0/min (20% of baseline). Queue shrinking -0.7 pax/snapshot."
+  },
+  {
+    "camera": "Security",
+    "severity": "GREEN",
+    "risk_score": 32.6,
+    "timestamp_s": 33.73,
+    "snapshot_num": 3,
+    "queue_pressure": 0.08,
+    "flow_degradation": 0.8,
+    "clearance_delay": 0.143,
+    "baggage_load": 0.25,
+    "queue_trend": -0.4,
+    "flow_trend": 0.7,
+    "time_to_breach_s": null,
+    "actions": [
+      "Flow rate at [Security] is critically low \u2014 check for blockages"
+    ],
+    "explanation": "[Security] Risk 33% (GREEN). Main driver: flow rate 2.0/min (20% of baseline)."
+  },
+  {
+    "camera": "Arrivals Hall",
+    "severity": "GREEN",
+    "risk_score": 32.6,
+    "timestamp_s": 33.73,
+    "snapshot_num": 3,
+    "queue_pressure": 0.08,
+    "flow_degradation": 0.8,
+    "clearance_delay": 0.143,
+    "baggage_load": 0.25,
+    "queue_trend": -0.7,
+    "flow_trend": 0.7,
+    "time_to_breach_s": null,
+    "actions": [
+      "Flow rate at [Arrivals Hall] is critically low \u2014 check for blockages"
+    ],
+    "explanation": "[Arrivals Hall] Risk 33% (GREEN). Main driver: flow rate 2.0/min (20% of baseline). Queue shrinking -0.7 pax/snapshot."
+  },
+  {
+    "camera": "Departures",
+    "severity": "GREEN",
+    "risk_score": 32.6,
+    "timestamp_s": 33.73,
+    "snapshot_num": 3,
+    "queue_pressure": 0.08,
+    "flow_degradation": 0.8,
+    "clearance_delay": 0.143,
+    "baggage_load": 0.25,
+    "queue_trend": -0.7,
+    "flow_trend": 0.7,
+    "time_to_breach_s": null,
+    "actions": [
+      "Flow rate at [Departures] is critically low \u2014 check for blockages"
+    ],
+    "explanation": "[Departures] Risk 33% (GREEN). Main driver: flow rate 2.0/min (20% of baseline). Queue shrinking -0.7 pax/snapshot."
+  }
+]

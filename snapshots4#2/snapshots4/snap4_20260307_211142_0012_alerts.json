@@ -1,0 +1,74 @@
+[
+  {
+    "camera": "Security",
+    "severity": "AMBER",
+    "risk_score": 44.4,
+    "timestamp_s": 93.46,
+    "snapshot_num": 11,
+    "queue_pressure": 0.36,
+    "flow_degradation": 1.0,
+    "clearance_delay": 0.0,
+    "baggage_load": 0.0,
+    "queue_trend": 0.262,
+    "flow_trend": 0.0,
+    "time_to_breach_s": 305.5,
+    "actions": [
+      "Flow rate at [Security] is critically low \u2014 check for blockages"
+    ],
+    "explanation": "[Security] Risk 44% (AMBER). Main driver: flow rate 0.0/min (0% of baseline). Estimated breach in 305s."
+  },
+  {
+    "camera": "Departures",
+    "severity": "AMBER",
+    "risk_score": 37.6,
+    "timestamp_s": 93.46,
+    "snapshot_num": 11,
+    "queue_pressure": 0.04,
+    "flow_degradation": 0.9,
+    "clearance_delay": 0.199,
+    "baggage_load": 0.5,
+    "queue_trend": -0.143,
+    "flow_trend": -0.274,
+    "time_to_breach_s": null,
+    "actions": [
+      "Flow rate at [Departures] is critically low \u2014 check for blockages"
+    ],
+    "explanation": "[Departures] Risk 38% (AMBER). Main driver: flow rate 1.0/min (10% of baseline)."
+  },
+  {
+    "camera": "Arrivals Hall",
+    "severity": "GREEN",
+    "risk_score": 33.9,
+    "timestamp_s": 93.46,
+    "snapshot_num": 11,
+    "queue_pressure": 0.04,
+    "flow_degradation": 0.8,
+    "clearance_delay": 0.165,
+    "baggage_load": 0.5,
+    "queue_trend": -0.655,
+    "flow_trend": 0.048,
+    "time_to_breach_s": null,
+    "actions": [
+      "Flow rate at [Arrivals Hall] is critically low \u2014 check for blockages"
+    ],
+    "explanation": "[Arrivals Hall] Risk 34% (GREEN). Main driver: flow rate 2.0/min (20% of baseline). Queue shrinking -0.7 pax/snapshot."
+  },
+  {
+    "camera": "Gate A",
+    "severity": "GREEN",
+    "risk_score": 32.1,
+    "timestamp_s": 93.46,
+    "snapshot_num": 11,
+    "queue_pressure": 0.36,
+    "flow_degradation": 0.4,
+    "clearance_delay": 0.258,
+    "baggage_load": 0.055,
+    "queue_trend": 0.929,
+    "flow_trend": -0.345,
+    "time_to_breach_s": 86.2,
+    "actions": [
+      "Flow rate declining at [Gate A] \u2014 monitor staffing level"
+    ],
+    "explanation": "[Gate A] Risk 32% (GREEN). Main driver: flow rate 6.0/min (60% of baseline). Queue growing +0.9 pax/snapshot. Estimated breach in 86s."
+  }
+]

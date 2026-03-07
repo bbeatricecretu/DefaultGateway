@@ -1,0 +1,75 @@
+[
+  {
+    "camera": "Security",
+    "severity": "AMBER",
+    "risk_score": 39.6,
+    "timestamp_s": 35.36,
+    "snapshot_num": 4,
+    "queue_pressure": 0.24,
+    "flow_degradation": 1.0,
+    "clearance_delay": 0.0,
+    "baggage_load": 0.0,
+    "queue_trend": 0.464,
+    "flow_trend": 0.0,
+    "time_to_breach_s": 204.6,
+    "actions": [
+      "Flow rate at [Security] is critically low \u2014 check for blockages"
+    ],
+    "explanation": "[Security] Risk 40% (AMBER). Main driver: flow rate 0.0/min (0% of baseline). Estimated breach in 205s."
+  },
+  {
+    "camera": "Arrivals Hall",
+    "severity": "GREEN",
+    "risk_score": 33.6,
+    "timestamp_s": 35.36,
+    "snapshot_num": 4,
+    "queue_pressure": 0.08,
+    "flow_degradation": 0.9,
+    "clearance_delay": 0.044,
+    "baggage_load": 0.25,
+    "queue_trend": -0.464,
+    "flow_trend": 0.083,
+    "time_to_breach_s": null,
+    "actions": [
+      "Flow rate at [Arrivals Hall] is critically low \u2014 check for blockages"
+    ],
+    "explanation": "[Arrivals Hall] Risk 34% (GREEN). Main driver: flow rate 1.0/min (10% of baseline)."
+  },
+  {
+    "camera": "Departures",
+    "severity": "GREEN",
+    "risk_score": 29.3,
+    "timestamp_s": 35.36,
+    "snapshot_num": 4,
+    "queue_pressure": 0.08,
+    "flow_degradation": 0.7,
+    "clearance_delay": 0.128,
+    "baggage_load": 0.25,
+    "queue_trend": -0.131,
+    "flow_trend": 0.405,
+    "time_to_breach_s": null,
+    "actions": [
+      "Flow rate at [Departures] is critically low \u2014 check for blockages"
+    ],
+    "explanation": "[Departures] Risk 29% (GREEN). Main driver: flow rate 3.0/min (30% of baseline)."
+  },
+  {
+    "camera": "Gate A",
+    "severity": "GREEN",
+    "risk_score": 21.9,
+    "timestamp_s": 35.36,
+    "snapshot_num": 4,
+    "queue_pressure": 0.16,
+    "flow_degradation": 0.4,
+    "clearance_delay": 0.114,
+    "baggage_load": 0.125,
+    "queue_trend": -0.548,
+    "flow_trend": 0.893,
+    "time_to_breach_s": null,
+    "actions": [
+      "2 special-needs passenger(s) at [Gate A] \u2014 ensure priority lane",
+      "Flow rate declining at [Gate A] \u2014 monitor staffing level"
+    ],
+    "explanation": "[Gate A] Risk 22% (GREEN). Main driver: flow rate 6.0/min (60% of baseline). Queue shrinking -0.5 pax/snapshot. 2 special-needs passenger(s) present."
+  }
+]

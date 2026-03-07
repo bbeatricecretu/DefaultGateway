@@ -1,0 +1,41 @@
+type,id_label,global_id,track_id,camera,x,y,size,category,special_type,timestamp_s,snapshot_num
+person,G:1,1,1,Gate A,597,271,,,,0.54,1
+person,G:2,2,2,Gate A,580,359,,,,0.54,1
+person,G:3,3,3,Gate A,109,358,,,,0.54,1
+person,G:4,4,4,Gate A,191,355,,,,0.54,1
+person,G:5,5,5,Gate A,246,310,,,,0.54,1
+person,G:6,6,6,Gate A,42,357,,,,0.54,1
+person,G:7,7,7,Gate A,97,276,,,,0.54,1
+person,G:8,8,8,Gate A,609,347,,,,0.54,1
+person,G:9,9,9,Gate A,357,328,,,,0.54,1
+person,G:10,10,10,Gate A,460,318,,,,0.54,1
+person,T:-1,-1,-1,Security,325,222,,,,0.54,1
+person,T:-1,-1,-1,Security,413,240,,,,0.54,1
+person,T:-1,-1,-1,Security,234,226,,,,0.54,1
+person,T:-1,-1,-1,Security,297,207,,,,0.54,1
+person,T:-1,-1,-1,Security,370,199,,,,0.54,1
+person,T:-1,-1,-1,Security,249,203,,,,0.54,1
+person,T:-1,-1,-1,Security,355,190,,,,0.54,1
+person,T:-1,-1,-1,Security,167,223,,,,0.54,1
+person,T:-1,-1,-1,Security,383,196,,,,0.54,1
+person,T:-1,-1,-1,Security,332,193,,,,0.54,1
+person,T:-1,-1,-1,Arrivals Hall,461,343,,,,0.54,1
+person,T:-1,-1,-1,Arrivals Hall,558,261,,,,0.54,1
+person,T:-1,-1,-1,Arrivals Hall,516,264,,,,0.54,1
+person,T:-1,-1,-1,Arrivals Hall,142,262,,,,0.54,1
+person,T:-1,-1,-1,Arrivals Hall,14,268,,,,0.54,1
+person,T:-1,-1,-1,Arrivals Hall,603,217,,,,0.54,1
+person,G:11,11,1,Departures,610,291,,,,0.54,1
+person,G:12,12,3,Departures,152,321,,,,0.54,1
+person,G:13,13,9,Departures,348,318,,,,0.54,1
+person,G:14,14,10,Departures,450,260,,,,0.54,1
+luggage,small,-1,-1,Gate A,20,245,small,backpack,,0.54,1
+luggage,small,-1,-1,Gate A,379,227,small,backpack,,0.54,1
+luggage,small,-1,-1,Gate A,481,223,small,backpack,,0.54,1
+luggage,small,-1,-1,Departures,356,216,small,backpack,,0.54,1
+luggage,small,-1,-1,Departures,218,328,small,suitcase,,0.54,1
+luggage,small,-1,-1,Departures,404,240,small,suitcase,,0.54,1
+luggage,small,-1,-1,Departures,222,272,small,suitcase,,0.54,1
+luggage,small,-1,-1,Departures,272,281,small,suitcase,,0.54,1
+special,child,-1,-1,Gate A,246,274,,,child,0.54,1
+special,wheelchair_user,-1,-1,Gate A,460,240,,,wheelchair_user,0.54,1

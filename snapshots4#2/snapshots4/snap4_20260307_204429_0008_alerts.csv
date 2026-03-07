@@ -1,0 +1,5 @@
+snapshot_num,timestamp_s,camera,severity,risk_score,queue_pressure,flow_degradation,clearance_delay,baggage_load,queue_trend,flow_trend,time_to_breach_s,top_action,explanation
+7,94.05,Gate A,AMBER,43.0,0.28,0.8,0.315,0.145,0.262,0.286,343.6,Flow rate at [Gate A] is critically low — check for blockages,[Gate A] Risk 43% (AMBER). Main driver: flow rate 2.0/min (20% of baseline). Estimated breach in 344s.
+7,94.05,Arrivals Hall,AMBER,43.0,0.28,0.8,0.315,0.145,0.262,0.286,343.6,Flow rate at [Arrivals Hall] is critically low — check for blockages,[Arrivals Hall] Risk 43% (AMBER). Main driver: flow rate 2.0/min (20% of baseline). Estimated breach in 344s.
+7,94.05,Departures,AMBER,43.0,0.28,0.8,0.315,0.145,0.262,0.286,343.6,Flow rate at [Departures] is critically low — check for blockages,[Departures] Risk 43% (AMBER). Main driver: flow rate 2.0/min (20% of baseline). Estimated breach in 344s.
+7,94.05,Security,AMBER,40.3,0.2,0.8,0.315,0.2,0.095,0.286,1050.0,Flow rate at [Security] is critically low — check for blockages,[Security] Risk 40% (AMBER). Main driver: flow rate 2.0/min (20% of baseline). Estimated breach in 1050s.

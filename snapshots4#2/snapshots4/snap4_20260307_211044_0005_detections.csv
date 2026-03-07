@@ -1,0 +1,20 @@
+type,id_label,global_id,track_id,camera,x,y,size,category,special_type,timestamp_s,snapshot_num
+person,G:5,5,5,Gate A,248,311,,,,35.36,5
+person,G:6,6,6,Gate A,47,357,,,,35.36,5
+person,G:7,7,7,Gate A,98,271,,,,35.36,5
+person,G:1,1,1,Gate A,591,359,,,,35.36,5
+person,T:-1,-1,-1,Security,418,242,,,,35.36,5
+person,T:-1,-1,-1,Security,323,266,,,,35.36,5
+person,T:-1,-1,-1,Security,330,203,,,,35.36,5
+person,T:-1,-1,-1,Security,254,200,,,,35.36,5
+person,T:-1,-1,-1,Security,283,197,,,,35.36,5
+person,T:-1,-1,-1,Security,349,173,,,,35.36,5
+person,T:-1,-1,-1,Arrivals Hall,122,260,,,,35.36,5
+person,T:-1,-1,-1,Arrivals Hall,542,258,,,,35.36,5
+person,G:17,17,2,Departures,529,349,,,,35.36,5
+person,G:12,12,3,Departures,345,296,,,,35.36,5
+luggage,small,-1,-1,Gate A,355,226,small,backpack,,35.36,5
+luggage,small,-1,-1,Arrivals Hall,588,252,small,suitcase,,35.36,5
+luggage,small,-1,-1,Departures,351,210,small,backpack,,35.36,5
+special,child,-1,-1,Gate A,248,274,,,child,35.36,5
+special,wheelchair_user,-1,-1,Gate A,98,215,,,wheelchair_user,35.36,5

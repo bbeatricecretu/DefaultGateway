@@ -1,0 +1,75 @@
+[
+  {
+    "camera": "Gate A",
+    "severity": "AMBER",
+    "risk_score": 39.2,
+    "timestamp_s": 117.95,
+    "snapshot_num": 14,
+    "queue_pressure": 0.36,
+    "flow_degradation": 0.6,
+    "clearance_delay": 0.258,
+    "baggage_load": 0.165,
+    "queue_trend": -0.024,
+    "flow_trend": -0.226,
+    "time_to_breach_s": null,
+    "actions": [
+      "Flow rate at [Gate A] is critically low \u2014 check for blockages",
+      "1 special-needs passenger(s) at [Gate A] \u2014 ensure priority lane"
+    ],
+    "explanation": "[Gate A] Risk 39% (AMBER). Main driver: flow rate 4.0/min (40% of baseline). 1 special-needs passenger(s) present."
+  },
+  {
+    "camera": "Departures",
+    "severity": "AMBER",
+    "risk_score": 37.6,
+    "timestamp_s": 117.95,
+    "snapshot_num": 14,
+    "queue_pressure": 0.04,
+    "flow_degradation": 0.9,
+    "clearance_delay": 0.199,
+    "baggage_load": 0.5,
+    "queue_trend": 0.0,
+    "flow_trend": -0.083,
+    "time_to_breach_s": null,
+    "actions": [
+      "Flow rate at [Departures] is critically low \u2014 check for blockages"
+    ],
+    "explanation": "[Departures] Risk 38% (AMBER). Main driver: flow rate 1.0/min (10% of baseline)."
+  },
+  {
+    "camera": "Security",
+    "severity": "AMBER",
+    "risk_score": 36.4,
+    "timestamp_s": 117.95,
+    "snapshot_num": 14,
+    "queue_pressure": 0.16,
+    "flow_degradation": 1.0,
+    "clearance_delay": 0.0,
+    "baggage_load": 0.0,
+    "queue_trend": -0.75,
+    "flow_trend": 0.0,
+    "time_to_breach_s": null,
+    "actions": [
+      "Flow rate at [Security] is critically low \u2014 check for blockages"
+    ],
+    "explanation": "[Security] Risk 36% (AMBER). Main driver: flow rate 0.0/min (0% of baseline). Queue shrinking -0.8 pax/snapshot."
+  },
+  {
+    "camera": "Arrivals Hall",
+    "severity": "AMBER",
+    "risk_score": 34.9,
+    "timestamp_s": 117.95,
+    "snapshot_num": 14,
+    "queue_pressure": 0.16,
+    "flow_degradation": 0.8,
+    "clearance_delay": 0.165,
+    "baggage_load": 0.125,
+    "queue_trend": 0.393,
+    "flow_trend": 0.0,
+    "time_to_breach_s": 267.3,
+    "actions": [
+      "Flow rate at [Arrivals Hall] is critically low \u2014 check for blockages"
+    ],
+    "explanation": "[Arrivals Hall] Risk 35% (AMBER). Main driver: flow rate 2.0/min (20% of baseline). Estimated breach in 267s."
+  }
+]

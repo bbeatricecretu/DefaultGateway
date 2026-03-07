@@ -1,0 +1,74 @@
+[
+  {
+    "camera": "Gate A",
+    "severity": "AMBER",
+    "risk_score": 43.0,
+    "timestamp_s": 94.05,
+    "snapshot_num": 7,
+    "queue_pressure": 0.28,
+    "flow_degradation": 0.8,
+    "clearance_delay": 0.315,
+    "baggage_load": 0.145,
+    "queue_trend": 0.262,
+    "flow_trend": 0.286,
+    "time_to_breach_s": 343.6,
+    "actions": [
+      "Flow rate at [Gate A] is critically low \u2014 check for blockages"
+    ],
+    "explanation": "[Gate A] Risk 43% (AMBER). Main driver: flow rate 2.0/min (20% of baseline). Estimated breach in 344s."
+  },
+  {
+    "camera": "Arrivals Hall",
+    "severity": "AMBER",
+    "risk_score": 43.0,
+    "timestamp_s": 94.05,
+    "snapshot_num": 7,
+    "queue_pressure": 0.28,
+    "flow_degradation": 0.8,
+    "clearance_delay": 0.315,
+    "baggage_load": 0.145,
+    "queue_trend": 0.262,
+    "flow_trend": 0.286,
+    "time_to_breach_s": 343.6,
+    "actions": [
+      "Flow rate at [Arrivals Hall] is critically low \u2014 check for blockages"
+    ],
+    "explanation": "[Arrivals Hall] Risk 43% (AMBER). Main driver: flow rate 2.0/min (20% of baseline). Estimated breach in 344s."
+  },
+  {
+    "camera": "Departures",
+    "severity": "AMBER",
+    "risk_score": 43.0,
+    "timestamp_s": 94.05,
+    "snapshot_num": 7,
+    "queue_pressure": 0.28,
+    "flow_degradation": 0.8,
+    "clearance_delay": 0.315,
+    "baggage_load": 0.145,
+    "queue_trend": 0.262,
+    "flow_trend": 0.286,
+    "time_to_breach_s": 343.6,
+    "actions": [
+      "Flow rate at [Departures] is critically low \u2014 check for blockages"
+    ],
+    "explanation": "[Departures] Risk 43% (AMBER). Main driver: flow rate 2.0/min (20% of baseline). Estimated breach in 344s."
+  },
+  {
+    "camera": "Security",
+    "severity": "AMBER",
+    "risk_score": 40.3,
+    "timestamp_s": 94.05,
+    "snapshot_num": 7,
+    "queue_pressure": 0.2,
+    "flow_degradation": 0.8,
+    "clearance_delay": 0.315,
+    "baggage_load": 0.2,
+    "queue_trend": 0.095,
+    "flow_trend": 0.286,
+    "time_to_breach_s": 1050.0,
+    "actions": [
+      "Flow rate at [Security] is critically low \u2014 check for blockages"
+    ],
+    "explanation": "[Security] Risk 40% (AMBER). Main driver: flow rate 2.0/min (20% of baseline). Estimated breach in 1050s."
+  }
+]

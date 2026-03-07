@@ -1,0 +1,74 @@
+[
+  {
+    "camera": "Gate A",
+    "severity": "AMBER",
+    "risk_score": 37.6,
+    "timestamp_s": 0.09,
+    "snapshot_num": 0,
+    "queue_pressure": 0.16,
+    "flow_degradation": 1.0,
+    "clearance_delay": 0.0,
+    "baggage_load": 0.125,
+    "queue_trend": 0.0,
+    "flow_trend": 0.0,
+    "time_to_breach_s": null,
+    "actions": [
+      "Flow rate at [Gate A] is critically low \u2014 check for blockages"
+    ],
+    "explanation": "[Gate A] Risk 38% (AMBER). Main driver: flow rate 0.0/min (0% of baseline)."
+  },
+  {
+    "camera": "Arrivals Hall",
+    "severity": "AMBER",
+    "risk_score": 37.6,
+    "timestamp_s": 0.09,
+    "snapshot_num": 0,
+    "queue_pressure": 0.16,
+    "flow_degradation": 1.0,
+    "clearance_delay": 0.0,
+    "baggage_load": 0.125,
+    "queue_trend": 0.0,
+    "flow_trend": 0.0,
+    "time_to_breach_s": null,
+    "actions": [
+      "Flow rate at [Arrivals Hall] is critically low \u2014 check for blockages"
+    ],
+    "explanation": "[Arrivals Hall] Risk 38% (AMBER). Main driver: flow rate 0.0/min (0% of baseline)."
+  },
+  {
+    "camera": "Departures",
+    "severity": "AMBER",
+    "risk_score": 37.6,
+    "timestamp_s": 0.09,
+    "snapshot_num": 0,
+    "queue_pressure": 0.16,
+    "flow_degradation": 1.0,
+    "clearance_delay": 0.0,
+    "baggage_load": 0.125,
+    "queue_trend": 0.0,
+    "flow_trend": 0.0,
+    "time_to_breach_s": null,
+    "actions": [
+      "Flow rate at [Departures] is critically low \u2014 check for blockages"
+    ],
+    "explanation": "[Departures] Risk 38% (AMBER). Main driver: flow rate 0.0/min (0% of baseline)."
+  },
+  {
+    "camera": "Security",
+    "severity": "AMBER",
+    "risk_score": 36.4,
+    "timestamp_s": 0.09,
+    "snapshot_num": 0,
+    "queue_pressure": 0.12,
+    "flow_degradation": 1.0,
+    "clearance_delay": 0.0,
+    "baggage_load": 0.165,
+    "queue_trend": 0.0,
+    "flow_trend": 0.0,
+    "time_to_breach_s": null,
+    "actions": [
+      "Flow rate at [Security] is critically low \u2014 check for blockages"
+    ],
+    "explanation": "[Security] Risk 36% (AMBER). Main driver: flow rate 0.0/min (0% of baseline)."
+  }
+]

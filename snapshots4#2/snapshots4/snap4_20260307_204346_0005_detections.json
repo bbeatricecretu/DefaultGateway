@@ -1,0 +1,114 @@
+{
+  "snapshot_num": 5,
+  "timestamp_s": 52.21,
+  "detections": [
+    {
+      "type": "person",
+      "id_label": "G:2",
+      "global_id": 2,
+      "track_id": 2,
+      "camera": "Gate A",
+      "x": 223,
+      "y": 334
+    },
+    {
+      "type": "person",
+      "id_label": "G:1",
+      "global_id": 1,
+      "track_id": 1,
+      "camera": "Gate A",
+      "x": 81,
+      "y": 276
+    },
+    {
+      "type": "person",
+      "id_label": "G:3",
+      "global_id": 3,
+      "track_id": 3,
+      "camera": "Gate A",
+      "x": 106,
+      "y": 269
+    },
+    {
+      "type": "person",
+      "id_label": "G:2",
+      "global_id": 2,
+      "track_id": 2,
+      "camera": "Security",
+      "x": 223,
+      "y": 334
+    },
+    {
+      "type": "person",
+      "id_label": "G:1",
+      "global_id": 1,
+      "track_id": 1,
+      "camera": "Security",
+      "x": 83,
+      "y": 276
+    },
+    {
+      "type": "person",
+      "id_label": "G:3",
+      "global_id": 3,
+      "track_id": 3,
+      "camera": "Security",
+      "x": 107,
+      "y": 269
+    },
+    {
+      "type": "person",
+      "id_label": "G:2",
+      "global_id": 2,
+      "track_id": 2,
+      "camera": "Arrivals Hall",
+      "x": 223,
+      "y": 334
+    },
+    {
+      "type": "person",
+      "id_label": "G:1",
+      "global_id": 1,
+      "track_id": 1,
+      "camera": "Arrivals Hall",
+      "x": 83,
+      "y": 276
+    },
+    {
+      "type": "person",
+      "id_label": "G:3",
+      "global_id": 3,
+      "track_id": 3,
+      "camera": "Arrivals Hall",
+      "x": 107,
+      "y": 269
+    },
+    {
+      "type": "person",
+      "id_label": "G:2",
+      "global_id": 2,
+      "track_id": 2,
+      "camera": "Departures",
+      "x": 223,
+      "y": 334
+    },
+    {
+      "type": "person",
+      "id_label": "G:1",
+      "global_id": 1,
+      "track_id": 1,
+      "camera": "Departures",
+      "x": 83,
+      "y": 276
+    },
+    {
+      "type": "person",
+      "id_label": "G:3",
+      "global_id": 3,
+      "track_id": 3,
+      "camera": "Departures",
+      "x": 107,
+      "y": 269
+    }
+  ]
+}

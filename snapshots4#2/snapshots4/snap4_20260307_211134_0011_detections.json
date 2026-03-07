@@ -1,0 +1,126 @@
+{
+  "snapshot_num": 11,
+  "timestamp_s": 85.18,
+  "detections": [
+    {
+      "type": "person",
+      "id_label": "G:3",
+      "global_id": 3,
+      "track_id": 3,
+      "camera": "Gate A",
+      "x": 423,
+      "y": 349
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Security",
+      "x": 473,
+      "y": 321
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Security",
+      "x": 278,
+      "y": 238
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Security",
+      "x": 206,
+      "y": 210
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Security",
+      "x": 410,
+      "y": 183
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Security",
+      "x": 425,
+      "y": 232
+    },
+    {
+      "type": "person",
+      "id_label": "T:-1",
+      "global_id": -1,
+      "track_id": -1,
+      "camera": "Security",
+      "x": 361,
+      "y": 175
+    },
+    {
+      "type": "person",
+      "id_label": "G:20",
+      "global_id": 20,
+      "track_id": 3,
+      "camera": "Arrivals Hall",
+      "x": 425,
+      "y": 358
+    },
+    {
+      "type": "person",
+      "id_label": "G:17",
+      "global_id": 17,
+      "track_id": 2,
+      "camera": "Departures",
+      "x": 533,
+      "y": 348
+    },
+    {
+      "type": "luggage",
+      "camera": "Gate A",
+      "x": 487,
+      "y": 220,
+      "size": "small",
+      "category": "backpack"
+    },
+    {
+      "type": "luggage",
+      "camera": "Gate A",
+      "x": 345,
+      "y": 297,
+      "size": "small",
+      "category": "handbag"
+    },
+    {
+      "type": "luggage",
+      "camera": "Arrivals Hall",
+      "x": 572,
+      "y": 250,
+      "size": "small",
+      "category": "suitcase"
+    },
+    {
+      "type": "luggage",
+      "camera": "Departures",
+      "x": 346,
+      "y": 209,
+      "size": "small",
+      "category": "backpack"
+    },
+    {
+      "type": "special",
+      "camera": "Security",
+      "x": 361,
+      "y": 166,
+      "special_type": "child"
+    }
+  ]
+}

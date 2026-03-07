@@ -1,0 +1,5 @@
+snapshot_num,timestamp_s,camera,severity,risk_score,queue_pressure,flow_degradation,clearance_delay,baggage_load,queue_trend,flow_trend,time_to_breach_s,top_action,explanation
+7,60.08,Security,AMBER,47.6,0.44,1.0,0.0,0.0,0.548,0.0,127.8,Flow rate at [Security] is critically low — check for blockages,[Security] Risk 48% (AMBER). Main driver: flow rate 0.0/min (0% of baseline). Queue growing +0.5 pax/snapshot. Estimated breach in 128s.
+7,60.08,Arrivals Hall,AMBER,34.5,0.04,0.8,0.193,0.5,-0.095,0.083,,Flow rate at [Arrivals Hall] is critically low — check for blockages,[Arrivals Hall] Risk 34% (AMBER). Main driver: flow rate 2.0/min (20% of baseline).
+7,60.08,Departures,GREEN,29.3,0.08,0.7,0.128,0.25,0.0,0.0,,Flow rate at [Departures] is critically low — check for blockages,[Departures] Risk 29% (GREEN). Main driver: flow rate 3.0/min (30% of baseline).
+7,60.08,Gate A,GREEN,15.6,0.08,0.2,0.197,0.25,-0.31,0.31,,1 special-needs passenger(s) at [Gate A] — ensure priority lane,[Gate A] Risk 16% (GREEN). Main driver: flow rate 8.0/min (80% of baseline). 1 special-needs passenger(s) present.

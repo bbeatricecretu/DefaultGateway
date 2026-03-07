@@ -1,0 +1,106 @@
+{
+  "snapshot_num": 7,
+  "timestamp_s": 77.73,
+  "detections": [
+    {
+      "type": "person",
+      "id_label": "G:1",
+      "global_id": 1,
+      "track_id": 1,
+      "camera": "Gate A",
+      "x": 102,
+      "y": 278
+    },
+    {
+      "type": "person",
+      "id_label": "G:1",
+      "global_id": 1,
+      "track_id": 1,
+      "camera": "Security",
+      "x": 103,
+      "y": 278
+    },
+    {
+      "type": "person",
+      "id_label": "G:1",
+      "global_id": 1,
+      "track_id": 1,
+      "camera": "Arrivals Hall",
+      "x": 103,
+      "y": 278
+    },
+    {
+      "type": "person",
+      "id_label": "G:1",
+      "global_id": 1,
+      "track_id": 1,
+      "camera": "Departures",
+      "x": 103,
+      "y": 278
+    },
+    {
+      "type": "luggage",
+      "camera": "Gate A",
+      "x": 365,
+      "y": 309,
+      "size": "small",
+      "category": "suitcase"
+    },
+    {
+      "type": "luggage",
+      "camera": "Gate A",
+      "x": 346,
+      "y": 303,
+      "size": "small",
+      "category": "suitcase"
+    },
+    {
+      "type": "luggage",
+      "camera": "Security",
+      "x": 365,
+      "y": 309,
+      "size": "small",
+      "category": "suitcase"
+    },
+    {
+      "type": "luggage",
+      "camera": "Security",
+      "x": 346,
+      "y": 303,
+      "size": "small",
+      "category": "suitcase"
+    },
+    {
+      "type": "luggage",
+      "camera": "Arrivals Hall",
+      "x": 365,
+      "y": 309,
+      "size": "small",
+      "category": "suitcase"
+    },
+    {
+      "type": "luggage",
+      "camera": "Arrivals Hall",
+      "x": 346,
+      "y": 303,
+      "size": "small",
+      "category": "suitcase"
+    },
+    {
+      "type": "luggage",
+      "camera": "Departures",
+      "x": 365,
+      "y": 309,
+      "size": "small",
+      "category": "suitcase"
+    },
+    {
+      "type": "luggage",
+      "camera": "Departures",
+      "x": 346,
+      "y": 303,
+      "size": "small",
+      "category": "suitcase"
+    }
+  ]
+}
