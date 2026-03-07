@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AeroVision Terminal Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body { margin: 0; padding: 0; background: #1a1a1a; font-family: sans-serif; }
+        #map { height: 100vh; width: 100vw; background: #222; }
+        #no-image-warning {
+            display: none;
+            position: fixed; top: 10px; left: 50%; transform: translateX(-50%);
+            background: #ff4444; color: white; padding: 10px 20px; border-radius: 6px;
+            z-index: 9999; font-size: 14px;
+        }
+        #coords-hint {
+            position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.75); color: #aef; padding: 8px 16px; border-radius: 20px;
+            z-index: 9999; font-size: 13px; pointer-events: none;
+        }
+        
+        /* Custom Markers */
+        .camera-marker {
+            background-color: #0099cc;
+            border: 2px solid #fff;
+            border-radius: 4px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(0,153,204,0.5);
+            font-size: 16px;
+        }
+        
+        .counter-marker {
+            border-radius: 50%;
+            border: 2px solid #fff;
+            color: #000;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            font-size: 14px;
+        }
+        
+        .risk-low { background-color: #00C851; color: white; }
+        .risk-medium { background-color: #ffbb33; color: black; }
+        .risk-high { background-color: #ff4444; color: white; animation: pulse 2s infinite; }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0); }
+        }
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+<div id="no-image-warning">⚠️ Map image not found — save the floor plan as <code>src/static/terminal_map.png</code></div>
+<div id="coords-hint">🖱️ Click anywhere on the map to get coordinates for marker placement</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // --- CONFIGURATION ---
+    // 1. Floorplan image is at src/static/terminal_map.png
+    const IMAGE_URL = '/static/terminal_map.png'; 
+    const MAP_WIDTH = 1406;  // Floor plan image width
+    const MAP_HEIGHT = 651;  // Floor plan image height
+
+    // --- MAP SETUP ---
+    const map = L.map('map', {
+        crs: L.CRS.Simple,
+        minZoom: -2,
+        maxZoom: 2,
+        zoomSnap: 0.5
+    });
+
+    const bounds = [[0, 0], [MAP_HEIGHT, MAP_WIDTH]];
+    const overlay = L.imageOverlay(IMAGE_URL, bounds).addTo(map);
+    map.fitBounds(bounds);
+
+    // Show warning if image fails to load
+    overlay.getElement() && overlay.getElement().addEventListener('error', () => {
+        document.getElementById('no-image-warning').style.display = 'block';
+    });
+    // Check after a short delay if image loaded
+    setTimeout(() => {
+        const el = overlay.getElement();
+        if (el && !el.complete || el && el.naturalWidth === 0) {
+            document.getElementById('no-image-warning').style.display = 'block';
+        }
+    }, 2000);
+
+    // DEBUG: Click map to get coordinates for configuration
+    map.on('click', e => {
+        console.log(`[${Math.round(e.latlng.lat)}, ${Math.round(e.latlng.lng)}]`);
+        L.popup().setLatLng(e.latlng)
+            .setContent(`Coords: [${Math.round(e.latlng.lat)}, ${Math.round(e.latlng.lng)}]`)
+            .openOn(map);
+    });
+
+    // --- DATA HANDLING ---
+    const markers = {}; // Store references to update them
+
+    // 1. Load Cameras (Static Config from web_app.py)
+    async function loadCameras() {
+        try {
+            const res = await fetch('/api/config');
+            const config = await res.json();
+            
+            // MAPPING: Define [Y, X] coordinates for each camera ID
+            // Click anywhere on the map to reveal [Y, X] coords for precise placement
+            const cameraPositions = {
+                "Security_Main": [490, 380],
+                "Security_Cam2": [490, 700],
+                "Security_Cam3": [200, 650],
+                "Security_Cam4": [200, 1100],
+            };
+
+            Object.keys(config.camere).forEach(camId => {
+                const pos = cameraPositions[camId] || [MAP_HEIGHT/2, MAP_WIDTH/2];
+                const icon = L.divIcon({ className: 'camera-marker', html: '📷', iconSize: [32, 32] });
+
+                L.marker(pos, {icon: icon})
+                    .bindPopup(`<div style="text-align:center;"><strong>${camId}</strong><br><img src="/video_feed/${camId}" width="320" style="margin-top:5px; border-radius:4px;"></div>`, {maxWidth: 350})
+                    .addTo(map);
+            });
+        } catch (e) { console.error("Error loading cameras:", e); }
+    }
+
+    // 2. Load Counters (Live Data from app.py)
+    async function updateDashboard() {
+        try {
+            const res = await fetch('http://localhost:5000/api/dashboard');
+            const data = await res.json();
+            
+            // MAPPING: Define [Y, X] coordinates for each counter ID
+            // Click anywhere on the map to reveal [Y, X] coords for precise placement
+            const counterPositions = {
+                "01": [165, 200],
+                "02": [165, 450],
+                "03": [165, 700],
+                "04": [165, 950],
+                "05": [165, 1200],
+            };
+
+            data.counters.forEach(c => {
+                const pos = counterPositions[c.id];
+                if (!pos) return;
+
+                const riskClass = `risk-${c.risk_level.toLowerCase()}`;
+                const icon = L.divIcon({ className: `counter-marker ${riskClass}`, html: c.queue_size, iconSize: [40, 40] });
+                const popupContent = `<b>Counter ${c.id} (${c.type})</b><hr>Queue: ${c.queue_size} pax<br>Flow: ${c.flow_rate}/min<br><i>${c.forecast}</i>`;
+
+                if (markers[c.id]) { markers[c.id].setIcon(icon); markers[c.id].setPopupContent(popupContent); }
+                else { markers[c.id] = L.marker(pos, {icon: icon}).bindPopup(popupContent).addTo(map); }
+            });
+        } catch (e) { console.error("Error fetching dashboard:", e); }
+    }
+
+    loadCameras();
+    setInterval(updateDashboard, 1000);
+    updateDashboard();
+</script>
+</body>
+</html>

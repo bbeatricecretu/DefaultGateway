@@ -1,0 +1,7 @@
+Save the airport floor plan image as:
+  terminal_map.png
+in this folder (src/static/terminal_map.png).
+
+Recommended image size: the map.html is configured for 1406 x 651 px.
+If your image has different dimensions, update MAP_WIDTH and MAP_HEIGHT
+in src/templates/map.html accordingly.
