@@ -2,25 +2,25 @@
   "harta_img": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Heathrow_T5_schematic.svg/800px-Heathrow_T5_schematic.svg.png",
   "camere": {
     "Camera_CheckIn_03": {
-      "sursa": "datasets/videos/sample.mp4",
+      "sursa": "datasets/videos/fight_0001.mpeg",
       "x": 22,
       "y": 40,
       "adiacente": ["Camera_Securitate", "Camera_CheckIn_04"]
     },
     "Camera_CheckIn_04": {
-      "sursa": "datasets/videos/sample.mp4",
+      "sursa": "datasets/videos/fight_0001.mpeg",
       "x": 38,
       "y": 40,
       "adiacente": ["Camera_CheckIn_03", "Camera_Securitate"]
     },
     "Camera_Securitate": {
-      "sursa": "datasets/videos/sample.mp4",
+      "sursa": "datasets/videos/fight_0001.mpeg",
       "x": 55,
       "y": 55,
       "adiacente": ["Camera_CheckIn_03", "Camera_CheckIn_04", "Camera_Gate_A1"]
     },
     "Camera_Gate_A1": {
-      "sursa": "datasets/videos/sample.mp4",
+      "sursa": "datasets/videos/fight_0001.mpeg",
       "x": 75,
       "y": 65,
       "adiacente": ["Camera_Securitate"]
