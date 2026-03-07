@@ -42,9 +42,10 @@ from datetime import datetime, timedelta
 from typing import Any, Dict
 
 import json
+import os
 import time
 
-from flask import Flask, jsonify, render_template, Response, stream_with_context
+from flask import Flask, jsonify, render_template, Response, send_from_directory, stream_with_context
 from flask_cors import CORS
 
 from engine import Engine
@@ -321,6 +322,13 @@ def snapshot_stream() -> Response:
 def dashboard_ui() -> Response:
     """Serve the live HTML dashboard."""
     return render_template("dashboard.html")
+
+
+@app.get("/static/<path:filename>")
+def serve_static(filename: str) -> Response:
+    """Serve files from the project-level static/ folder (floor plan, zones JSON)."""
+    static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+    return send_from_directory(static_dir, filename)
 
 
 # ---------------------------------------------------------------------------

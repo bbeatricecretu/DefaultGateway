@@ -185,6 +185,44 @@
     from { opacity: .4; transform: translateY(4px); }
     to   { opacity: 1;  transform: translateY(0);   }
   }
+
+  /* ── 3D FLOOR PLAN ──────────────────────────────────────────────── */
+  .map-panel {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden; position: relative;
+  }
+  .map-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px; border-bottom: 1px solid var(--border);
+  }
+  #map-canvas-wrap {
+    width: 100%; height: 420px; position: relative; background: #080d18;
+  }
+  #map-canvas-wrap canvas { display: block; }
+  .map-legend {
+    position: absolute; bottom: 10px; left: 12px;
+    display: flex; flex-direction: column; gap: 4px;
+    pointer-events: none;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 6px;
+    font-size: .68rem; color: var(--text);
+  }
+  .legend-dot {
+    width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0;
+  }
+  .map-tooltip {
+    position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+    background: rgba(10,14,26,.88); border: 1px solid var(--border);
+    border-radius: 8px; padding: 6px 14px;
+    font-size: .78rem; color: var(--text); pointer-events: none;
+    opacity: 0; transition: opacity .2s; white-space: nowrap;
+  }
+  .map-tooltip.visible { opacity: 1; }
+  .map-hint {
+    position: absolute; bottom: 10px; right: 12px;
+    font-size: .65rem; color: var(--muted); pointer-events: none;
+  }
 </style>
 </head>
 <body>
@@ -253,6 +291,20 @@
     <div class="opt-list" id="opt-list"></div>
   </div>
 
+  <!-- 3D Floor Plan -->
+  <div class="map-panel">
+    <div class="map-header">
+      <div class="section-title" style="margin:0">Terminal Floor Plan · 3D</div>
+      <span style="font-size:.68rem;color:var(--muted);margin-left:4px">drag to rotate · scroll to zoom · right-drag to pan</span>
+      <button id="btn-reset-cam" class="tl-btn" style="margin-left:auto;font-size:.72rem">⟳ Reset View</button>
+    </div>
+    <div id="map-canvas-wrap">
+      <div class="map-tooltip" id="map-tooltip"></div>
+      <div class="map-legend" id="map-legend"></div>
+      <div class="map-hint">click a zone to focus</div>
+    </div>
+  </div>
+
 </main>
 
 <!-- ── TIMELINE ───────────────────────────────────────────────────────── -->
@@ -265,6 +317,16 @@
   <button class="tl-btn" id="btn-next">▶</button>
   <div id="tl-counter" style="margin-left:auto">Frame — / —</div>
 </div>
+
+<!-- Three.js r160 via CDN (no build step) -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
 
 <script>
 // ── State ────────────────────────────────────────────────────────────────
@@ -551,6 +613,286 @@ fetch('/api/mock/snapshots')
     buildTimeline();
     connectSSE();
   });
+</script>
+
+<!-- ── 3D FLOOR PLAN (Three.js ES module) ──────────────────────────────── -->
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ── Canvas setup ─────────────────────────────────────────────────────────
+const wrap    = document.getElementById('map-canvas-wrap');
+const tooltip = document.getElementById('map-tooltip');
+const legend  = document.getElementById('map-legend');
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type    = THREE.PCFSoftShadowMap;
+wrap.appendChild(renderer.domElement);
+
+const camera = new THREE.PerspectiveCamera(45, 1, 0.01, 500);
+camera.position.set(0, 2.8, 3.5);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping    = true;
+controls.dampingFactor    = 0.08;
+controls.minDistance      = 0.5;
+controls.maxDistance      = 12;
+controls.maxPolarAngle    = Math.PI / 2.05;
+controls.target.set(0, 0, 0);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x080d18);
+scene.fog        = new THREE.Fog(0x080d18, 8, 20);
+
+// ── Lighting ─────────────────────────────────────────────────────────────
+scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+
+const sun = new THREE.DirectionalLight(0xffffff, 1.1);
+sun.position.set(3, 6, 4);
+sun.castShadow             = true;
+sun.shadow.mapSize.width   = 2048;
+sun.shadow.mapSize.height  = 2048;
+sun.shadow.camera.near     = 0.5;
+sun.shadow.camera.far      = 30;
+sun.shadow.camera.left     = -6;
+sun.shadow.camera.right    = 6;
+sun.shadow.camera.top      = 4;
+sun.shadow.camera.bottom   = -4;
+scene.add(sun);
+
+const fill = new THREE.DirectionalLight(0x4488ff, 0.3);
+fill.position.set(-3, 4, -3);
+scene.add(fill);
+
+// ── Floor with texture ───────────────────────────────────────────────────
+let floorMesh;
+const texLoader  = new THREE.TextureLoader();
+const floorTex   = texLoader.load('/static/floor_plan.png',
+  tex => {
+    tex.colorSpace = THREE.SRGBColorSpace;
+    // Size the plane to match the image aspect ratio
+    const aspect = tex.image.width / tex.image.height;
+    floorMesh.scale.set(aspect, 1, 1);
+    floorMesh.geometry.computeBoundingBox();
+  }
+);
+
+const floorGeo  = new THREE.PlaneGeometry(1, 1);   // will be scaled by aspect
+const floorMat  = new THREE.MeshStandardMaterial({
+  map: floorTex, transparent: true, opacity: 0.55,
+  roughness: 1, metalness: 0,
+});
+floorMesh = new THREE.Mesh(floorGeo, floorMat);
+floorMesh.rotation.x = -Math.PI / 2;
+floorMesh.receiveShadow = true;
+scene.add(floorMesh);
+
+// Grid lines for depth
+const grid = new THREE.GridHelper(10, 40, 0x1e2d45, 0x1e2d45);
+grid.position.y = 0.001;
+scene.add(grid);
+
+// ── Coordinate helpers ───────────────────────────────────────────────────
+// Zones are in image-normalised [0,1] coords.
+// Map: x_img → x_world  (-aspect/2 … +aspect/2)
+//      y_img → z_world  (-0.5 … +0.5)  (y is flipped)
+let imgAspect = 1381 / 766;   // updated when texture loads
+
+function imgToWorld(nx, ny) {
+  return [
+    (nx - 0.5) * imgAspect,
+    (0.5 - ny),             // flip Y
+  ];
+}
+
+function centroid(pts) {
+  const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length;
+  const cy = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+  return imgToWorld(cx, cy);
+}
+
+// ── Build extruded zone meshes ───────────────────────────────────────────
+const EXTRUDE_H    = 0.08;   // height of zone volume
+const ZONE_Y       = 0.001;  // sit just above the floor
+const zoneMeshes   = [];
+
+function hexToThree(hex) {
+  return new THREE.Color(hex);
+}
+
+function buildZones(zonesData) {
+  zonesData.forEach(zone => {
+    if (!zone.polygons.length) return;
+
+    // Use the largest polygon
+    const poly = zone.polygons[0];
+    const pts  = poly.points;
+
+    // Build THREE.Shape from normalised coords
+    const shape = new THREE.Shape();
+    const [sx, sy] = imgToWorld(pts[0][0], pts[0][1]);
+    shape.moveTo(sx, sy);
+    for (let i = 1; i < pts.length; i++) {
+      const [wx, wy] = imgToWorld(pts[i][0], pts[i][1]);
+      shape.lineTo(wx, wy);
+    }
+    shape.closePath();
+
+    const extrudeSettings = {
+      depth:           EXTRUDE_H,
+      bevelEnabled:    true,
+      bevelThickness:  0.003,
+      bevelSize:       0.003,
+      bevelSegments:   2,
+    };
+
+    const geo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    // ExtrudeGeometry extrudes along Z → rotate so it goes along Y (up)
+    geo.rotateX(-Math.PI / 2);
+
+    const color = hexToThree(zone.color);
+    const mat   = new THREE.MeshStandardMaterial({
+      color,
+      transparent:       true,
+      opacity:           0.62,
+      roughness:         0.4,
+      metalness:         0.1,
+      emissive:          color,
+      emissiveIntensity: 0.08,
+      side:              THREE.DoubleSide,
+    });
+
+    const mesh      = new THREE.Mesh(geo, mat);
+    mesh.position.y = ZONE_Y;
+    mesh.castShadow = true;
+    mesh.userData   = {
+      zoneId:    zone.id,
+      zoneName:  zone.name,
+      color:     zone.color,
+      baseEmissive: 0.08,
+      centroid:  centroid(pts),
+    };
+
+    // Edge outline
+    const edges    = new THREE.EdgesGeometry(geo, 8);
+    const lineMat  = new THREE.LineBasicMaterial({
+      color: new THREE.Color(zone.color).multiplyScalar(1.6),
+      transparent: true, opacity: 0.7,
+    });
+    const outline  = new THREE.LineSegments(edges, lineMat);
+    mesh.add(outline);
+
+    scene.add(mesh);
+    zoneMeshes.push(mesh);
+  });
+
+  // Build legend
+  legend.innerHTML = zonesData
+    .filter(z => z.polygons.length)
+    .map(z => `
+      <div class="legend-item">
+        <div class="legend-dot" style="background:${z.color}"></div>
+        ${z.name}
+      </div>`)
+    .join('');
+}
+
+// ── Load zones JSON and build scene ──────────────────────────────────────
+fetch('/static/zones.json')
+  .then(r => r.json())
+  .then(data => {
+    imgAspect = data.image_w / data.image_h;
+    // Rescale floor plane now we know aspect
+    floorMesh.scale.set(imgAspect, 1, 1);
+    buildZones(data.zones);
+    controls.target.set(0, 0, 0);
+    controls.update();
+  });
+
+// ── Raycasting for hover / click ─────────────────────────────────────────
+const raycaster  = new THREE.Raycaster();
+const mouse      = new THREE.Vector2();
+let   hoveredMesh = null;
+
+function onPointerMove(e) {
+  const rect = renderer.domElement.getBoundingClientRect();
+  mouse.x =  ((e.clientX - rect.left)  / rect.width)  * 2 - 1;
+  mouse.y = -((e.clientY - rect.top)   / rect.height) * 2 + 1;
+}
+
+function onPointerClick(e) {
+  raycaster.setFromCamera(mouse, camera);
+  const hits = raycaster.intersectObjects(zoneMeshes);
+  if (!hits.length) return;
+
+  const mesh = hits[0].object;
+  const { zoneName, centroid: [cx, cz] } = mesh.userData;
+
+  // Fly camera above the clicked zone
+  const target = new THREE.Vector3(cx, 0, cz);
+  controls.target.copy(target);
+  camera.position.set(cx, 2.0, cz + 1.8);
+  controls.update();
+
+  tooltip.textContent = `📍 ${zoneName}`;
+  tooltip.classList.add('visible');
+  setTimeout(() => tooltip.classList.remove('visible'), 2500);
+}
+
+wrap.addEventListener('pointermove', onPointerMove);
+wrap.addEventListener('click',       onPointerClick);
+
+// ── Reset view button ─────────────────────────────────────────────────────
+document.getElementById('btn-reset-cam').addEventListener('click', () => {
+  camera.position.set(0, 2.8, 3.5);
+  controls.target.set(0, 0, 0);
+  controls.update();
+});
+
+// ── Resize handler ───────────────────────────────────────────────────────
+function resize() {
+  const W = wrap.clientWidth;
+  const H = wrap.clientHeight;
+  renderer.setSize(W, H);
+  camera.aspect = W / H;
+  camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(wrap);
+resize();
+
+// ── Render loop ──────────────────────────────────────────────────────────
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+
+  // Hover highlight via raycasting
+  raycaster.setFromCamera(mouse, camera);
+  const hits = raycaster.intersectObjects(zoneMeshes);
+  const hit  = hits.length ? hits[0].object : null;
+
+  if (hit !== hoveredMesh) {
+    if (hoveredMesh) {
+      hoveredMesh.material.emissiveIntensity = hoveredMesh.userData.baseEmissive;
+      hoveredMesh.material.opacity           = 0.62;
+      document.body.style.cursor            = 'default';
+    }
+    hoveredMesh = hit;
+    if (hoveredMesh) {
+      hoveredMesh.material.emissiveIntensity = 0.55;
+      hoveredMesh.material.opacity           = 0.82;
+      document.body.style.cursor            = 'pointer';
+      tooltip.textContent = hoveredMesh.userData.zoneName;
+      tooltip.classList.add('visible');
+    } else {
+      tooltip.classList.remove('visible');
+    }
+  }
+
+  renderer.render(scene, camera);
+}
+animate();
 </script>
 </body>
 </html>
