@@ -374,6 +374,7 @@ class Counter:
             "type": self.type,
             "queue_size": self.queue.size,
             "flow_rate": self.queue.flow_rate,
+            "throughput": int(round(self.queue.flow_rate * 60.0)),
             "avg_baggage": self.avg_baggage,
             "special_items": self.special_items,
             "forecast": self.forecast,

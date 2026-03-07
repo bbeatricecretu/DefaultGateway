@@ -73,7 +73,7 @@ def format_timestamp(dt: datetime) -> str:
     Returns:
         String like ``"3/7/2026 02:02 PM"``.
     """
-    return dt.strftime("%-m/%-d/%Y %I:%M %p")
+    return f"{dt.month}/{dt.day}/{dt.year} {dt.strftime('%I:%M %p')}"
 
 
 def get_current_timestamp() -> str:
