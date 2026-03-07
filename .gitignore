@@ -1,0 +1,57 @@
+# ── Python ────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── Virtual environment ───────────────────────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+
+# ── YOLOv8 model weights (large binary, not source code) ─────────────────
+*.pt
+*.pth
+*.onnx
+*.torchscript
+
+# ── Airport database (runtime-generated, contains PII) ───────────────────
+*.db
+*.sqlite
+*.sqlite3
+
+# ── Snapshots – raw images and per-frame detection files ─────────────────
+# Keep:  kpis.csv, kpis.jsonl, message (1).txt   (mock-data sources)
+# Ignore: photos, per-frame CSVs/JSONs, heatmaps  (large / generated)
+snapshots4/*.jpg
+snapshots4/*_detections.csv
+snapshots4/*_detections.json
+snapshots4/heatmaps/
+
+# ── Environment / secrets ─────────────────────────────────────────────────
+.env
+.env.*
+*.env
+
+# ── IDE & OS ──────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ── Flask / runtime artifacts ─────────────────────────────────────────────
+instance/
+flask_session/
+
+# ── Logs ──────────────────────────────────────────────────────────────────
+*.log
+logs/
