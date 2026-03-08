@@ -1,0 +1,37 @@
+type,id_label,global_id,track_id,camera,x,y,size,category,special_type,timestamp_s,snapshot_num
+person,T:-1,-1,-1,Gate A,117,359,,,,35.95,5
+person,T:-1,-1,-1,Gate A,145,359,,,,35.95,5
+person,T:-1,-1,-1,Gate A,64,286,,,,35.95,5
+person,T:-1,-1,-1,Gate A,310,321,,,,35.95,5
+person,T:-1,-1,-1,Gate A,168,273,,,,35.95,5
+person,T:-1,-1,-1,Gate A,42,266,,,,35.95,5
+person,T:-1,-1,-1,Gate A,25,246,,,,35.95,5
+person,T:-1,-1,-1,Security,117,359,,,,35.95,5
+person,T:-1,-1,-1,Security,145,359,,,,35.95,5
+person,T:-1,-1,-1,Security,64,286,,,,35.95,5
+person,T:-1,-1,-1,Security,310,321,,,,35.95,5
+person,T:-1,-1,-1,Security,168,273,,,,35.95,5
+person,T:-1,-1,-1,Security,42,266,,,,35.95,5
+person,T:-1,-1,-1,Security,25,246,,,,35.95,5
+person,T:-1,-1,-1,Arrivals Hall,117,359,,,,35.95,5
+person,T:-1,-1,-1,Arrivals Hall,145,359,,,,35.95,5
+person,T:-1,-1,-1,Arrivals Hall,64,286,,,,35.95,5
+person,T:-1,-1,-1,Arrivals Hall,310,321,,,,35.95,5
+person,T:-1,-1,-1,Arrivals Hall,168,273,,,,35.95,5
+person,T:-1,-1,-1,Arrivals Hall,42,266,,,,35.95,5
+person,T:-1,-1,-1,Arrivals Hall,25,246,,,,35.95,5
+person,T:-1,-1,-1,Departures,117,359,,,,35.95,5
+person,T:-1,-1,-1,Departures,145,359,,,,35.95,5
+person,T:-1,-1,-1,Departures,64,286,,,,35.95,5
+person,T:-1,-1,-1,Departures,310,321,,,,35.95,5
+person,T:-1,-1,-1,Departures,168,273,,,,35.95,5
+person,T:-1,-1,-1,Departures,42,266,,,,35.95,5
+person,T:-1,-1,-1,Departures,25,246,,,,35.95,5
+luggage,small,-1,-1,Gate A,57,243,small,handbag,,35.95,5
+luggage,small,-1,-1,Gate A,365,309,small,suitcase,,35.95,5
+luggage,small,-1,-1,Security,57,243,small,handbag,,35.95,5
+luggage,small,-1,-1,Security,365,309,small,suitcase,,35.95,5
+luggage,small,-1,-1,Arrivals Hall,57,243,small,handbag,,35.95,5
+luggage,small,-1,-1,Arrivals Hall,365,309,small,suitcase,,35.95,5
+luggage,small,-1,-1,Departures,57,243,small,handbag,,35.95,5
+luggage,small,-1,-1,Departures,365,309,small,suitcase,,35.95,5

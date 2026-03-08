@@ -67,3 +67,28 @@ DEFAULT_CLEARANCE_AVG_SECONDS: Final[float] = 207.0  # seconds – 3 m 27 s base
 # Live feeds
 # ---------------------------------------------------------------------------
 LIVE_FEEDS_ACTIVE: Final[int] = 2
+
+# ---------------------------------------------------------------------------
+# Remote API Configuration (for DATA_SOURCE=live)
+# ---------------------------------------------------------------------------
+# These are default values – override via environment variables.
+#
+# Environment Variables:
+#   DATA_SOURCE      "mock" | "snapshot4" | "http" | "live"
+#   REMOTE_API_URL   Base URL of remote airport-monitor API
+#   POLL_INTERVAL    Seconds between polls (float)
+#
+# Example usage (WSL/bash):
+#   export DATA_SOURCE=live
+#   export REMOTE_API_URL=http://192.168.1.42:8000
+#   export POLL_INTERVAL=3
+#   python app.py
+#
+# The live mode endpoints:
+#   GET /api/live          SSE stream of real-time dashboard updates
+#   GET /api/live/latest   Single latest frame (non-streaming)
+#   GET /api/live/status   Connection status and frame count
+# ---------------------------------------------------------------------------
+DEFAULT_REMOTE_API_URL: Final[str] = "http://192.168.1.42:8000"
+DEFAULT_POLL_INTERVAL: Final[float] = 3.0
+

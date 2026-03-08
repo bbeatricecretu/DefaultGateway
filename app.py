@@ -52,6 +52,7 @@ from engine import Engine
 from models import Counter, Flight
 from scheduler import ScheduleManager
 import mock_snapshot4
+from src.api_client import RemoteAPIClient, start_shared_client, get_shared_client, stop_shared_client
 
 # ---------------------------------------------------------------------------
 # App factory
@@ -193,6 +194,36 @@ _engine: Engine = _build_engine()
 
 
 # ---------------------------------------------------------------------------
+# Live API state (updated by background poller when DATA_SOURCE=live)
+# ---------------------------------------------------------------------------
+import threading
+
+_live_state: Dict[str, Any] = {
+    "payload": {},         # counter-keyed payload for engine.run()
+    "alerts": [],          # alert list from remote API
+    "image_url": None,     # absolute URL to snapshot image
+    "raw": {},             # full raw response for debugging
+    "timestamp": None,     # last update timestamp
+    "frame_count": 0,      # total frames received since start
+}
+_live_lock = threading.Lock()
+_live_update_event = threading.Event()  # signaled when new data arrives
+
+
+def _on_live_frame(payload: Dict, alerts: list, image_url: str, raw: Dict):
+    """Callback from RemoteAPIClient when a new valid frame arrives."""
+    global _live_state
+    with _live_lock:
+        _live_state["payload"] = payload
+        _live_state["alerts"] = alerts
+        _live_state["image_url"] = image_url
+        _live_state["raw"] = raw
+        _live_state["timestamp"] = raw.get("timestamp") or raw.get("ts") or time.strftime("%Y-%m-%d %H:%M:%S")
+        _live_state["frame_count"] += 1
+    _live_update_event.set()  # signal waiting SSE streams
+
+
+# ---------------------------------------------------------------------------
 # Payload adapter
 # ---------------------------------------------------------------------------
 
@@ -258,9 +289,14 @@ def _get_payloads() -> Dict[str, Dict[str, Any]]:
         except Exception as exc:
             raise RuntimeError(f"HTTP adapter error: {exc}") from exc
 
+    if source == "live":
+        # Returns the latest cached payload from the remote API poller
+        # If no data yet, returns empty dict which engine handles gracefully
+        return _live_state.get("payload", {})
+
     raise ValueError(
         f"Unsupported DATA_SOURCE {source!r}. "
-        "Valid options: 'mock', 'snapshot4', 'http'."
+        "Valid options: 'mock', 'snapshot4', 'http', 'live'."
     )
 
 
@@ -359,6 +395,127 @@ def snapshot_stream() -> Response:
             "X-Accel-Buffering": "no",
         },
     )
+
+
+# ---------------------------------------------------------------------------
+# Live SSE stream  –  streams data from remote API (DATA_SOURCE=live)
+# ---------------------------------------------------------------------------
+
+@app.get("/api/live")
+def live_stream() -> Response:
+    """
+    GET /api/live  (Server-Sent Events)
+
+    Streams dashboard updates from the remote airport-monitor API in real-time.
+    Unlike /api/stream (which cycles through mock data), this endpoint:
+
+    1. Polls the remote API at http://<REMOTE_API_URL>/latest
+    2. Skips frames marked as "no data"
+    3. Deduplicates by timestamp to avoid redundant updates
+    4. Pushes only when new valid data arrives
+
+    The remote API URL is configured via REMOTE_API_URL environment variable.
+    Default: http://192.168.1.42:8000
+
+    Events include:
+        ``_frame``       – running frame count since connection started
+        ``_live``        – always true (distinguishes from mock stream)
+        ``_image_url``   – absolute URL to the snapshot image
+        ``_alerts``      – alerts from the remote API
+        ``_connected``   – true if remote API is reachable
+    """
+    def _generate():
+        local_frame_count = 0
+        last_seen_frame = 0
+
+        while True:
+            # Wait for new data or timeout after 3 seconds
+            _live_update_event.wait(timeout=3.0)
+            _live_update_event.clear()
+
+            with _live_lock:
+                current_frame = _live_state["frame_count"]
+                # Skip if no new data
+                if current_frame == last_seen_frame and current_frame > 0:
+                    # Send heartbeat to keep connection alive
+                    yield f": heartbeat\n\n"
+                    continue
+
+                last_seen_frame = current_frame
+                payload = _live_state["payload"]
+                alerts = _live_state["alerts"]
+                image_url = _live_state["image_url"]
+                timestamp = _live_state["timestamp"]
+
+            # Skip empty payloads (no data yet)
+            if not payload:
+                yield f"data: {{\"_live\": true, \"_waiting\": true, \"_message\": \"Waiting for remote API data...\"}}\n\n"
+                continue
+
+            try:
+                output: Dict[str, Any] = _engine.run(payload)
+                output["_frame"] = local_frame_count
+                output["_live"] = True
+                output["_connected"] = True
+                output["_image_url"] = image_url
+                output["_alerts"] = alerts
+                output["_timestamp"] = timestamp
+                output["_total_frames"] = current_frame
+                local_frame_count += 1
+                yield f"data: {json.dumps(output)}\n\n"
+            except Exception as exc:
+                yield f"data: {{\"error\": \"{exc}\", \"_live\": true}}\n\n"
+
+    return Response(
+        stream_with_context(_generate()),
+        mimetype="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
+@app.get("/api/live/status")
+def live_status() -> Response:
+    """
+    GET /api/live/status
+
+    Returns the current status of the live API connection.
+    """
+    client = get_shared_client()
+    with _live_lock:
+        return jsonify({
+            "connected": client.is_connected() if client else False,
+            "polling": client.is_alive() if client else False,
+            "frame_count": _live_state["frame_count"],
+            "last_timestamp": _live_state["timestamp"],
+            "has_data": bool(_live_state["payload"]),
+        }), 200
+
+
+@app.get("/api/live/latest")
+def live_latest() -> Response:
+    """
+    GET /api/live/latest
+
+    Returns the most recent frame from the remote API (non-streaming).
+    Useful for one-off requests or polling fallback.
+    """
+    with _live_lock:
+        if not _live_state["payload"]:
+            return jsonify({"status": "no_data", "message": "No data received yet from remote API"}), 200
+
+        try:
+            output: Dict[str, Any] = _engine.run(_live_state["payload"])
+            output["_live"] = True
+            output["_image_url"] = _live_state["image_url"]
+            output["_alerts"] = _live_state["alerts"]
+            output["_timestamp"] = _live_state["timestamp"]
+            output["_frame_count"] = _live_state["frame_count"]
+            return jsonify(output), 200
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
 
 
 # ---------------------------------------------------------------------------
@@ -492,13 +649,40 @@ def scene_analysis() -> Response:
 # Entrypoint
 # ---------------------------------------------------------------------------
 
+def _start_live_poller():
+    """Start the remote API polling client if DATA_SOURCE=live."""
+    source = os.getenv("DATA_SOURCE", "mock")
+    if source != "live":
+        return None
+
+    remote_url = os.getenv("REMOTE_API_URL", "http://192.168.1.42:8000")
+    poll_interval = float(os.getenv("POLL_INTERVAL", "3"))
+
+    print(f"  🔴 LIVE MODE    →  Polling {remote_url} every {poll_interval}s")
+
+    client = start_shared_client(
+        base_url=remote_url,
+        on_new_frame=_on_live_frame,
+        poll_interval=poll_interval,
+    )
+    return client
+
+
 if __name__ == "__main__":
     host = os.getenv("HOST", "0.0.0.0")
     port = int(os.getenv("PORT", "5000"))
     debug = os.getenv("FLASK_ENV", "production") == "development"
+    source = os.getenv("DATA_SOURCE", "mock")
 
     print(f"  AeroVision API  →  http://{host}:{port}/api/dashboard")
-    print(f"  DATA_SOURCE     →  {os.getenv('DATA_SOURCE', 'mock')}")
+    print(f"  DATA_SOURCE     →  {source}")
     print(f"  Debug mode      →  {debug}")
 
+    if source == "live":
+        print(f"  REMOTE_API_URL  →  {os.getenv('REMOTE_API_URL', 'http://192.168.1.42:8000')}")
+        print(f"  POLL_INTERVAL   →  {os.getenv('POLL_INTERVAL', '3')}s")
+        print(f"  Live endpoints  →  /api/live (SSE), /api/live/latest, /api/live/status")
+        _start_live_poller()
+
     app.run(host=host, port=port, debug=debug)
+

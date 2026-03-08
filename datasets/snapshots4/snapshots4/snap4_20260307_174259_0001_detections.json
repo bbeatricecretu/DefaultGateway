@@ -1,0 +1,146 @@
+{
+  "snapshot_num": 1,
+  "timestamp_s": 4.18,
+  "detections": [
+    {
+      "type": "person",
+      "id_label": "G:1",
+      "global_id": 1,
+      "track_id": 1,
+      "camera": "Gate A",
+      "x": 67,
+      "y": 273
+    },
+    {
+      "type": "person",
+      "id_label": "G:2",
+      "global_id": 2,
+      "track_id": 2,
+      "camera": "Gate A",
+      "x": 209,
+      "y": 337
+    },
+    {
+      "type": "person",
+      "id_label": "G:3",
+      "global_id": 3,
+      "track_id": 3,
+      "camera": "Gate A",
+      "x": 103,
+      "y": 265
+    },
+    {
+      "type": "person",
+      "id_label": "G:1",
+      "global_id": 1,
+      "track_id": 1,
+      "camera": "Security",
+      "x": 67,
+      "y": 273
+    },
+    {
+      "type": "person",
+      "id_label": "G:2",
+      "global_id": 2,
+      "track_id": 2,
+      "camera": "Security",
+      "x": 209,
+      "y": 337
+    },
+    {
+      "type": "person",
+      "id_label": "G:3",
+      "global_id": 3,
+      "track_id": 3,
+      "camera": "Security",
+      "x": 102,
+      "y": 265
+    },
+    {
+      "type": "person",
+      "id_label": "G:1",
+      "global_id": 1,
+      "track_id": 1,
+      "camera": "Arrivals Hall",
+      "x": 67,
+      "y": 273
+    },
+    {
+      "type": "person",
+      "id_label": "G:2",
+      "global_id": 2,
+      "track_id": 2,
+      "camera": "Arrivals Hall",
+      "x": 210,
+      "y": 337
+    },
+    {
+      "type": "person",
+      "id_label": "G:3",
+      "global_id": 3,
+      "track_id": 3,
+      "camera": "Arrivals Hall",
+      "x": 103,
+      "y": 265
+    },
+    {
+      "type": "person",
+      "id_label": "G:1",
+      "global_id": 1,
+      "track_id": 1,
+      "camera": "Departures",
+      "x": 67,
+      "y": 273
+    },
+    {
+      "type": "person",
+      "id_label": "G:2",
+      "global_id": 2,
+      "track_id": 2,
+      "camera": "Departures",
+      "x": 209,
+      "y": 337
+    },
+    {
+      "type": "person",
+      "id_label": "G:3",
+      "global_id": 3,
+      "track_id": 3,
+      "camera": "Departures",
+      "x": 103,
+      "y": 265
+    },
+    {
+      "type": "luggage",
+      "camera": "Gate A",
+      "x": 364,
+      "y": 309,
+      "size": "small",
+      "category": "suitcase"
+    },
+    {
+      "type": "luggage",
+      "camera": "Security",
+      "x": 364,
+      "y": 309,
+      "size": "small",
+      "category": "suitcase"
+    },
+    {
+      "type": "luggage",
+      "camera": "Arrivals Hall",
+      "x": 364,
+      "y": 309,
+      "size": "small",
+      "category": "suitcase"
+    },
+    {
+      "type": "luggage",
+      "camera": "Departures",
+      "x": 364,
+      "y": 309,
+      "size": "small",
+      "category": "suitcase"
+    }
+  ]
+}
