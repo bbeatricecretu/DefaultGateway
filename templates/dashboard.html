@@ -42,9 +42,6 @@
     background: rgba(34,197,94,.15); color: var(--low); border: 1px solid var(--low);
   }
   .status-pill.danger { background: rgba(239,68,68,.15); color: var(--high); border-color: var(--high); }
-  .status-pill.warning { background: rgba(245,158,11,.15); color: var(--med); border-color: var(--med); }
-  .status-pill.live-api { background: rgba(14,165,233,.2); color: var(--accent); border-color: var(--accent); animation: pulse-live 2s infinite; }
-  @keyframes pulse-live { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
   #hdr-source { display: none; }
   #hdr-timestamp { font-size: .88rem; color: var(--muted); font-family: var(--mono); }
   .hdr-center { flex: 1; display: flex; justify-content: center; align-items: center; }
@@ -325,10 +322,11 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
-    align-items: start;
+    align-items: stretch;
   }
   .dashboard-left  { display: flex; flex-direction: column; gap: 16px; }
   .dashboard-right { display: flex; flex-direction: column; gap: 16px; }
+  .dashboard-right .panel { overflow-y: auto; flex: 1; min-height: 0; }
   /* override metrics and counters to 2-col when inside the dashboard left column */
   .dashboard-left .metrics-row  { grid-template-columns: repeat(2, 1fr); }
   .dashboard-left .counters-grid { grid-template-columns: repeat(2, 1fr); }
@@ -407,7 +405,7 @@
     <div class="dashboard-left">
 
       <div>
-        <div class="section-title">System Metrics</div>
+        <!-- <div class="section-title">System Metrics</div> -->
         <div class="metrics-row">
           <div class="metric-card">
             <div class="metric-label">Throughput</div>
@@ -433,7 +431,7 @@
       </div>
 
       <div>
-        <div class="section-title">Check-in Counters</div>
+        <!-- <div class="section-title">Check-in Counters</div> -->
         <div class="counters-grid" id="counters-grid"></div>
       </div>
 
@@ -442,15 +440,16 @@
     <!-- RIGHT: Flights + Warnings & Suggestions -->
     <div class="dashboard-right">
 
-      <div class="panel">
+      <div class="panel" style="display:flex; flex-direction:column; max-height:400px;">
+        <div class="section-title">Warnings &amp; Suggestions</div>
+        <div class="opt-list" id="opt-list" style="overflow-y:scroll; flex:1; min-height:0;"></div>
+      </div
+      
+      <div class="panel" style="display:flex; flex-direction:column; max-height:400px;">
         <div class="section-title">Flights</div>
-        <div id="flights-list"></div>
+        <div id="flights-list" style="overflow-y:scroll; flex:1; min-height:0;"></div>
       </div>
 
-      <div class="panel">
-        <div class="section-title">Warnings &amp; Suggestions</div>
-        <div class="opt-list" id="opt-list"></div>
-      </div>
 
     </div><!-- .dashboard-right -->
 
@@ -489,52 +488,23 @@ let playing = true;
 let playTimer = null;
 let evtSource = null;
 let _lastCounters = [];
-let _isLiveMode = false;
 
 // Scene analysis removed – replaced by AI Zone Alerts panel
 
-// Detect if we should use live mode (check URL param or fetch status)
-function checkLiveMode() {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('mode') === 'live') return true;
-  if (params.get('mode') === 'mock') return false;
-  // Auto-detect: check if live poller is running
-  return fetch('/api/live/status')
-    .then(r => r.json())
-    .then(d => d.polling === true)
-    .catch(() => false);
-}
-
 // ── SSE connection ───────────────────────────────────────────────────────
-async function connectSSE() {
+function connectSSE() {
   if (evtSource) evtSource.close();
-
-  // Check if live mode is available
-  _isLiveMode = await checkLiveMode();
-  const endpoint = _isLiveMode ? '/api/live' : '/api/stream';
-  console.log(`[SSE] Connecting to ${endpoint} (live=${_isLiveMode})`);
-
-  evtSource = new EventSource(endpoint);
+  evtSource = new EventSource('/api/stream');
 
   evtSource.onopen = () => {
     document.getElementById('conn-dot').className = 'conn-dot';
-    document.getElementById('hdr-status').textContent = _isLiveMode ? 'LIVE API' : 'LIVE';
-    document.getElementById('hdr-status').className = _isLiveMode
-      ? 'status-pill live-api'
-      : 'status-pill';
+    document.getElementById('hdr-status').textContent = 'LIVE';
+    document.getElementById('hdr-status').className = 'status-pill';
   };
 
   evtSource.onmessage = e => {
+    if (!playing) return;        // ignore server pushes when user is scrubbing
     const data = JSON.parse(e.data);
-
-    // Handle "waiting for data" message in live mode
-    if (data._waiting) {
-      document.getElementById('hdr-status').textContent = 'WAITING...';
-      document.getElementById('hdr-status').className = 'status-pill warning';
-      return;
-    }
-
-    if (!playing && !_isLiveMode) return;  // ignore server pushes when user is scrubbing (mock mode only)
     applyData(data);
   };
 
