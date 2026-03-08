@@ -1,0 +1,38 @@
+.flight-panel { display: flex; flex-direction: column; overflow: hidden; }
+.panel-title {
+  font-size: .82rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; color: var(--muted); margin-bottom: 4px; flex-shrink: 0;
+}
+.panel-scroll {
+  flex: 1; min-height: 0; overflow-y: auto; padding-right: 4px;
+}
+.flight-card {
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+}
+.flight-card:last-child { border-bottom: none; }
+.flight-top {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.flight-id {
+  font-family: var(--mono); font-weight: 700; color: var(--accent);
+  font-size: .95rem;
+}
+.flight-status { font-size: .82rem; color: var(--text-secondary); font-weight: 600; }
+.flight-route { font-size: .82rem; color: var(--muted); }
+.risk-pill {
+  margin-left: auto; font-size: .72rem; font-weight: 700;
+  padding: 4px 10px; border-radius: 5px;
+  letter-spacing: .07em; text-transform: uppercase;
+}
+.risk-pill.ok     { background: rgba(52,211,153,.1);  color: var(--low); }
+.risk-pill.danger { background: rgba(248,113,113,.12); color: var(--high); }
+.flight-details {
+  display: flex; gap: 16px; flex-wrap: wrap;
+  font-size: .82rem; color: var(--muted); margin-top: 6px;
+}
+.flight-details strong { color: var(--text); }
+.flight-prediction {
+  font-size: .82rem; color: var(--accent2); margin-top: 6px;
+  line-height: 1.5; font-style: italic;
+}
+.no-data { color: var(--text-secondary); font-size: .9rem; padding: 16px 0; }

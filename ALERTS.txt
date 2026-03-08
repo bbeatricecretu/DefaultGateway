@@ -1,0 +1,559 @@
+[
+  {
+    "current_state": {
+      "video_summary": "The terminal appears moderately busy with visible queue formation around Security and lighter movement in Arrivals Hall. Departures shows passengers with more baggage than other zones, while the overall terminal flow remains active but uneven.",
+      "queue_assessment": {
+        "total_visible_passengers": 30,
+        "busiest_area": "TERMINAL",
+        "flow_status": "slow"
+      },
+      "kpi_validation": {
+        "kpis_match_visual": true,
+        "discrepancies": []
+      }
+    },
+    "flight_impact_analysis": [
+      {
+        "flight_id": "DL789",
+        "status": "DEPARTS 45M",
+        "risk_level": "high",
+        "key_factors": [
+          "security_screening_factor=1.8",
+          "connection_pax_ratio=0.30",
+          "late_arrival_ratio=0.18"
+        ],
+        "expected_impact": "Likely to increase Security congestion within the next 15 to 30 minutes due to elevated screening complexity and a moderate late-arrival wave.",
+        "peak_time_window": "T-35 to T-15 minutes"
+      },
+      {
+        "flight_id": "UA456",
+        "status": "LANDED",
+        "risk_level": "medium",
+        "key_factors": [
+          "connection_pax_ratio=0.60",
+          "priority_ratio=0.25"
+        ],
+        "expected_impact": "Likely to contribute to passenger redistribution through Arrivals Hall and transfer corridors rather than check-in or screening queues.",
+        "peak_time_window": "Now to +20 minutes"
+      },
+      {
+        "flight_id": "BA112",
+        "status": "DEPARTS 65M",
+        "risk_level": "medium",
+        "key_factors": [
+          "families_ratio=0.35",
+          "security_screening_factor=1.4"
+        ],
+        "expected_impact": "Family-heavy profile may slow screening and increase special-item handling, but departure time leaves some buffer before peak pressure.",
+        "peak_time_window": "T-45 to T-20 minutes"
+      },
+      {
+        "flight_id": "EK205",
+        "status": "DEPARTS 105M",
+        "risk_level": "high",
+        "key_factors": [
+          "security_screening_factor=2.1",
+          "connection_pax_ratio=0.45",
+          "families_ratio=0.28"
+        ],
+        "expected_impact": "Enhanced checks and connecting passengers suggest a heavy upcoming screening load, likely building gradually rather than immediately.",
+        "peak_time_window": "T-70 to T-35 minutes"
+      },
+      {
+        "flight_id": "FR9032",
+        "status": "DEPARTS 25M",
+        "risk_level": "critical",
+        "key_factors": [
+          "late_arrival_ratio=0.35",
+          "status=DEPARTS 25M",
+          "priority_ratio=0.05"
+        ],
+        "expected_impact": "High risk of a sharp late-passenger surge with limited mitigation capacity due to low priority-lane diversion and short time to departure.",
+        "peak_time_window": "Now to T-10 minutes"
+      }
+    ],
+    "alerts": [
+      {
+        "priority": "CRITICAL",
+        "type": "boarding",
+        "message": "FR9032 is at immediate risk of a late-passenger surge causing processing delays near Departures and Security.",
+        "affected_flights": [
+          "FR9032"
+        ],
+        "triggering_factors": {
+          "late_arrival_ratio": 0.35,
+          "time_to_departure": "25M",
+          "priority_ratio": 0.05
+        },
+        "supporting_kpis": {
+          "departures_queue_size": 4,
+          "departures_avg_baggage_per_pax": 1.25,
+          "terminal_queue_size": 30
+        },
+        "recommended_action": "Push boarding reminders, deploy queue marshal near Departures, and prepare fast handling for late arrivals."
+      },
+      {
+        "priority": "HIGH",
+        "type": "security",
+        "message": "Security demand is likely to rise due to DL789 and upcoming EK205 screening complexity.",
+        "affected_flights": [
+          "DL789",
+          "EK205"
+        ],
+        "triggering_factors": {
+          "DL789_security_screening_factor": 1.8,
+          "EK205_security_screening_factor": 2.1,
+          "connection_pax_ratio": [
+            0.3,
+            0.45
+          ]
+        },
+        "supporting_kpis": {
+          "security_queue_size": 10,
+          "security_throughput_per_hr": 60.0,
+          "terminal_flow_rate_per_min": 3.0
+        },
+        "recommended_action": "Open an additional screening lane and allocate a document-check support staff member."
+      }
+    ],
+    "resource_recommendations": {
+      "staff_reallocation": [
+        "Move 1 queue marshal to Departures for FR9032 late-arrival handling.",
+        "Assign 1 experienced screening assistant to Security before DL789 peak window."
+      ],
+      "lane_adjustments": [
+        "Open 1 extra Security lane due to screening factor above 1.5 for DL789 and EK205.",
+        "Keep Arrivals Hall lane allocation unchanged."
+      ],
+      "priority_areas": [
+        "Security",
+        "Departures",
+        "TERMINAL"
+      ]
+    },
+    "confidence": {
+      "overall": "high",
+      "reasoning": "Video description aligns with KPI concentration in TERMINAL and Security, and flight factors provide clear near-term congestion drivers."
+    }
+  },
+  {
+    "current_state": {
+      "video_summary": "Passenger movement appears active across the terminal with moderate queueing. Security remains the main operational pressure point, while Arrivals Hall looks comparatively fluid. Departures shows a smaller queue but passengers there carry more baggage per person.",
+      "queue_assessment": {
+        "total_visible_passengers": 17,
+        "busiest_area": "Security",
+        "flow_status": "congested"
+      },
+      "kpi_validation": {
+        "kpis_match_visual": false,
+        "discrepancies": [
+          "TERMINAL throughput is high, but Security throughput remains low relative to likely demand.",
+          "Departures queue is small, but baggage-per-passenger is elevated, indicating possible hidden processing friction."
+        ]
+      }
+    },
+    "flight_impact_analysis": [
+      {
+        "flight_id": "DL789",
+        "status": "DEPARTS 45M",
+        "risk_level": "high",
+        "key_factors": [
+          "security_screening_factor=1.8",
+          "storm alert in notes",
+          "connection_pax_ratio=0.30"
+        ],
+        "expected_impact": "DL789 is likely to produce above-normal document and security friction, increasing queue dwell time rather than just queue length.",
+        "peak_time_window": "T-30 to T-10 minutes"
+      },
+      {
+        "flight_id": "UA456",
+        "status": "LANDED",
+        "risk_level": "low",
+        "key_factors": [
+          "arrivals flight",
+          "connection_pax_ratio=0.60"
+        ],
+        "expected_impact": "Minimal impact on Security, but can increase transfer corridor movement and directional crowding.",
+        "peak_time_window": "Now to +15 minutes"
+      },
+      {
+        "flight_id": "BA112",
+        "status": "DEPARTS 65M",
+        "risk_level": "medium",
+        "key_factors": [
+          "families_ratio=0.35",
+          "late_arrival_ratio=0.12"
+        ],
+        "expected_impact": "Likely to add stroller and family-item handling complexity later, especially if de-icing delays shift arrival profiles.",
+        "peak_time_window": "T-50 to T-25 minutes"
+      },
+      {
+        "flight_id": "EK205",
+        "status": "DEPARTS 105M",
+        "risk_level": "medium",
+        "key_factors": [
+          "security_screening_factor=2.1",
+          "connection_pax_ratio=0.45"
+        ],
+        "expected_impact": "Strong future risk, but likely outside the immediate operational window compared with FR9032 and DL789.",
+        "peak_time_window": "T-80 to T-45 minutes"
+      },
+      {
+        "flight_id": "FR9032",
+        "status": "DEPARTS 25M",
+        "risk_level": "high",
+        "key_factors": [
+          "late_arrival_ratio=0.35",
+          "urgent departure horizon",
+          "minimal priority diversion"
+        ],
+        "expected_impact": "High probability of short, sharp crowding at final processing points due to late arrivals rushing the cutoff window.",
+        "peak_time_window": "Now to T-5 minutes"
+      }
+    ],
+    "alerts": [
+      {
+        "priority": "HIGH",
+        "type": "security",
+        "message": "Security throughput appears insufficient relative to near-term flight mix, especially for DL789.",
+        "affected_flights": [
+          "DL789",
+          "FR9032"
+        ],
+        "triggering_factors": {
+          "security_screening_factor": 1.8,
+          "late_arrival_ratio_FR9032": 0.35
+        },
+        "supporting_kpis": {
+          "security_queue_size": 7,
+          "security_throughput_per_hr": 60.0,
+          "security_flow_rate_per_min": 0.0
+        },
+        "recommended_action": "Open one additional lane immediately and assign staff to pre-sort passengers by readiness."
+      },
+      {
+        "priority": "MEDIUM",
+        "type": "staffing",
+        "message": "Family-heavy BA112 may require extra assistance capacity before its screening peak begins.",
+        "affected_flights": [
+          "BA112"
+        ],
+        "triggering_factors": {
+          "families_ratio": 0.35,
+          "security_screening_factor": 1.4
+        },
+        "supporting_kpis": {
+          "total_specials_terminal": 0,
+          "departures_avg_baggage_per_pax": 2.5
+        },
+        "recommended_action": "Pre-position one staff member for family and special-item handling near Security entry."
+      }
+    ],
+    "resource_recommendations": {
+      "staff_reallocation": [
+        "Shift 1 staff member from Arrivals Hall to Security for the next 30 minutes.",
+        "Assign 1 floor coordinator to redirect rushed passengers for FR9032."
+      ],
+      "lane_adjustments": [
+        "Open 1 additional Security lane now.",
+        "Keep Gate A operations unchanged unless DL789 boarding crowd spills over."
+      ],
+      "priority_areas": [
+        "Security",
+        "Departures"
+      ]
+    },
+    "confidence": {
+      "overall": "medium",
+      "reasoning": "The KPI pattern strongly supports Security stress, but visible passenger totals are limited and some congestion may be latent rather than fully visible."
+    }
+  },
+  {
+    "current_state": {
+      "video_summary": "The terminal looks busy but controlled. Most movement appears distributed through the wider terminal space, with no evidence of complete blockage. Gate A and Arrivals Hall appear lighter than Security and the general terminal circulation zone.",
+      "queue_assessment": {
+        "total_visible_passengers": 17,
+        "busiest_area": "TERMINAL",
+        "flow_status": "smooth"
+      },
+      "kpi_validation": {
+        "kpis_match_visual": true,
+        "discrepancies": []
+      }
+    },
+    "flight_impact_analysis": [
+      {
+        "flight_id": "DL789",
+        "status": "DEPARTS 45M",
+        "risk_level": "medium",
+        "key_factors": [
+          "security_screening_factor=1.8",
+          "late_arrival_ratio=0.18"
+        ],
+        "expected_impact": "Moderate near-term load increase at Security, but current flow elsewhere suggests terminal circulation can absorb part of the pressure.",
+        "peak_time_window": "T-30 to T-15 minutes"
+      },
+      {
+        "flight_id": "UA456",
+        "status": "LANDED",
+        "risk_level": "low",
+        "key_factors": [
+          "arrivals flow",
+          "priority_ratio=0.25"
+        ],
+        "expected_impact": "Limited congestion contribution, primarily local movement through transfer and onward-routing paths.",
+        "peak_time_window": "Now to +10 minutes"
+      },
+      {
+        "flight_id": "BA112",
+        "status": "DEPARTS 65M",
+        "risk_level": "medium",
+        "key_factors": [
+          "families_ratio=0.35",
+          "security_screening_factor=1.4",
+          "de-icing note"
+        ],
+        "expected_impact": "Potential gradual queue thickening from family groups and additional hand-carried items.",
+        "peak_time_window": "T-50 to T-20 minutes"
+      },
+      {
+        "flight_id": "EK205",
+        "status": "DEPARTS 105M",
+        "risk_level": "high",
+        "key_factors": [
+          "security_screening_factor=2.1",
+          "connection_pax_ratio=0.45",
+          "families_ratio=0.28"
+        ],
+        "expected_impact": "Likely strongest structured demand on screening resources later in the horizon, especially if current queues are not reduced first.",
+        "peak_time_window": "T-75 to T-40 minutes"
+      },
+      {
+        "flight_id": "FR9032",
+        "status": "DEPARTS 25M",
+        "risk_level": "high",
+        "key_factors": [
+          "late_arrival_ratio=0.35",
+          "status=DEPARTS 25M"
+        ],
+        "expected_impact": "May create a short-lived but intense surge of hurried passengers near final processing points.",
+        "peak_time_window": "Now to T-10 minutes"
+      }
+    ],
+    "alerts": [
+      {
+        "priority": "HIGH",
+        "type": "congestion",
+        "message": "FR9032 and DL789 overlap may create a near-term spike in rushed passengers moving through Security and Departures.",
+        "affected_flights": [
+          "FR9032",
+          "DL789"
+        ],
+        "triggering_factors": {
+          "FR9032_late_arrival_ratio": 0.35,
+          "DL789_security_screening_factor": 1.8,
+          "departure_horizons": [
+            "25M",
+            "45M"
+          ]
+        },
+        "supporting_kpis": {
+          "security_queue_size": 7,
+          "departures_queue_size": 2,
+          "terminal_flow_rate_per_min": 3.0
+        },
+        "recommended_action": "Deploy one queue manager between Security and Departures and start passenger readiness screening."
+      },
+      {
+        "priority": "MEDIUM",
+        "type": "security",
+        "message": "EK205 has a later but significant screening burden that should be planned for now.",
+        "affected_flights": [
+          "EK205"
+        ],
+        "triggering_factors": {
+          "security_screening_factor": 2.1,
+          "connection_pax_ratio": 0.45,
+          "families_ratio": 0.28
+        },
+        "supporting_kpis": {
+          "security_throughput_per_hr": 60.0,
+          "security_queue_size": 7
+        },
+        "recommended_action": "Prepare an additional lane plan and document-check staffing before EK205 peak window begins."
+      }
+    ],
+    "resource_recommendations": {
+      "staff_reallocation": [
+        "Place 1 mobile staff member at the Security entry funnel.",
+        "Retain current Arrivals Hall staffing due to low queue pressure."
+      ],
+      "lane_adjustments": [
+        "Prepare but do not yet activate a second Security support position unless queue growth continues.",
+        "Maintain current Gate A staffing."
+      ],
+      "priority_areas": [
+        "Security",
+        "Departures",
+        "Transfer corridor"
+      ]
+    },
+    "confidence": {
+      "overall": "medium",
+      "reasoning": "Current KPIs indicate manageable flow, but flight mix suggests near-term risk escalation, especially from late arrivals and high-screening flights."
+    }
+  },
+  {
+    "current_state": {
+      "video_summary": "The airport terminal appears crowded with uneven passenger distribution. Security and the wider terminal circulation area show the strongest signs of pressure, while Gate A and Arrivals Hall remain comparatively lighter. Passenger movement is active but likely constrained by queue buildup and baggage handling.",
+      "queue_assessment": {
+        "total_visible_passengers": 30,
+        "busiest_area": "Security",
+        "flow_status": "congested"
+      },
+      "kpi_validation": {
+        "kpis_match_visual": true,
+        "discrepancies": []
+      }
+    },
+    "flight_impact_analysis": [
+      {
+        "flight_id": "DL789",
+        "status": "DEPARTS 45M",
+        "risk_level": "high",
+        "key_factors": [
+          "security_screening_factor=1.8",
+          "connection_pax_ratio=0.30",
+          "storm alert"
+        ],
+        "expected_impact": "Will likely intensify Security pressure through elevated screening times and extra document verification.",
+        "peak_time_window": "T-35 to T-10 minutes"
+      },
+      {
+        "flight_id": "UA456",
+        "status": "LANDED",
+        "risk_level": "medium",
+        "key_factors": [
+          "connection_pax_ratio=0.60",
+          "priority_ratio=0.25"
+        ],
+        "expected_impact": "High connection share may increase wayfinding and transfer corridor demand, though not primary screening demand.",
+        "peak_time_window": "Now to +20 minutes"
+      },
+      {
+        "flight_id": "BA112",
+        "status": "DEPARTS 65M",
+        "risk_level": "high",
+        "key_factors": [
+          "families_ratio=0.35",
+          "security_screening_factor=1.4",
+          "late_arrival_ratio=0.12"
+        ],
+        "expected_impact": "Family-heavy traffic may compound queue handling due to strollers, grouped travelers, and extra item checks.",
+        "peak_time_window": "T-45 to T-20 minutes"
+      },
+      {
+        "flight_id": "EK205",
+        "status": "DEPARTS 105M",
+        "risk_level": "high",
+        "key_factors": [
+          "security_screening_factor=2.1",
+          "connection_pax_ratio=0.45"
+        ],
+        "expected_impact": "Represents a strong future congestion driver at Security if current backlogs are not reduced before its passengers accumulate.",
+        "peak_time_window": "T-80 to T-40 minutes"
+      },
+      {
+        "flight_id": "FR9032",
+        "status": "DEPARTS 25M",
+        "risk_level": "critical",
+        "key_factors": [
+          "late_arrival_ratio=0.35",
+          "status=DEPARTS 25M",
+          "priority_ratio=0.05"
+        ],
+        "expected_impact": "Immediate surge risk from late passengers with little lane segregation benefit, increasing urgency at final passenger processing points.",
+        "peak_time_window": "Now to T-8 minutes"
+      }
+    ],
+    "alerts": [
+      {
+        "priority": "CRITICAL",
+        "type": "congestion",
+        "message": "Security congestion risk is immediate and likely to worsen due to FR9032 urgency overlapping with DL789 elevated screening complexity.",
+        "affected_flights": [
+          "FR9032",
+          "DL789"
+        ],
+        "triggering_factors": {
+          "FR9032_late_arrival_ratio": 0.35,
+          "DL789_security_screening_factor": 1.8,
+          "DL789_connection_pax_ratio": 0.3
+        },
+        "supporting_kpis": {
+          "security_queue_size": 10,
+          "security_throughput_per_hr": 60.0,
+          "terminal_queue_size": 30,
+          "total_specials_terminal": 2
+        },
+        "recommended_action": "Open an extra Security lane immediately, move staff to front-end triage, and prioritize ready-to-screen passengers."
+      },
+      {
+        "priority": "HIGH",
+        "type": "staffing",
+        "message": "BA112 family-heavy mix may create handling delays unless special-assistance support is pre-positioned.",
+        "affected_flights": [
+          "BA112"
+        ],
+        "triggering_factors": {
+          "families_ratio": 0.35,
+          "security_screening_factor": 1.4
+        },
+        "supporting_kpis": {
+          "gate_a_total_specials": 2,
+          "departures_avg_baggage_per_pax": 1.25
+        },
+        "recommended_action": "Assign one support agent for families and special items before BA112 enters peak processing."
+      },
+      {
+        "priority": "MEDIUM",
+        "type": "delay",
+        "message": "EK205 carries strong later-horizon screening demand and should be planned for before backlog compounds.",
+        "affected_flights": [
+          "EK205"
+        ],
+        "triggering_factors": {
+          "security_screening_factor": 2.1,
+          "connection_pax_ratio": 0.45
+        },
+        "supporting_kpis": {
+          "security_queue_size": 10,
+          "security_flow_rate_per_min": 0.0
+        },
+        "recommended_action": "Stage staff for later lane expansion and monitor queue growth every 10 minutes."
+      }
+    ],
+    "resource_recommendations": {
+      "staff_reallocation": [
+        "Move 2 staff to Security intake and document pre-check.",
+        "Assign 1 roaming agent to assist late passengers for FR9032 near Departures.",
+        "Reserve 1 support agent for family/special-item processing ahead of BA112."
+      ],
+      "lane_adjustments": [
+        "Open 1 additional Security lane now.",
+        "Prepare a second temporary screening support position for EK205 buildup.",
+        "Keep Arrivals Hall lane count unchanged."
+      ],
+      "priority_areas": [
+        "Security",
+        "Departures",
+        "TERMINAL",
+        "Transfer corridor"
+      ]
+    },
+    "confidence": {
+      "overall": "high",
+      "reasoning": "The KPI concentration at Security and TERMINAL strongly supports current congestion, and the flight schedule contains multiple overlapping high-risk demand drivers."
+    }
+  }
+]

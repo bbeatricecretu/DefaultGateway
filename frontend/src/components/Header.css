@@ -1,0 +1,42 @@
+.header {
+  background: linear-gradient(180deg, var(--surface) 0%, rgba(14,21,37,.95) 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 28px;
+  display: flex; align-items: center; gap: 20px;
+  backdrop-filter: blur(16px);
+  position: sticky; top: 0; z-index: 100;
+}
+.logo {
+  font-size: 1.5rem; font-weight: 800; letter-spacing: .04em;
+  color: var(--accent); cursor: pointer; user-select: none;
+  transition: opacity .2s;
+}
+.logo:hover { opacity: .85; }
+.logo span { color: var(--text); font-weight: 700; }
+.status-pill {
+  font-size: .78rem; font-weight: 700; letter-spacing: .1em;
+  padding: 5px 16px; border-radius: 999px;
+  background: rgba(52,211,153,.1); color: var(--low); border: 1px solid rgba(52,211,153,.3);
+  text-shadow: 0 0 10px rgba(52,211,153,.25);
+  text-transform: uppercase;
+}
+.status-pill.danger {
+  background: rgba(248,113,113,.1); color: var(--high);
+  border-color: rgba(248,113,113,.3); text-shadow: 0 0 10px rgba(248,113,113,.25);
+}
+.hdr-center { flex: 1; display: flex; justify-content: center; }
+.hdr-timestamp {
+  font-size: .88rem; color: var(--muted); font-family: var(--mono); font-weight: 500;
+}
+.nav-btn {
+  padding: 10px 24px; border-radius: 8px; border: 1px solid var(--accent);
+  background: rgba(56,189,248,.1); color: var(--accent); cursor: pointer;
+  font-size: .9rem; font-weight: 700; letter-spacing: .03em;
+  transition: all .2s; white-space: nowrap;
+  font-family: var(--font);
+}
+.nav-btn:hover { background: rgba(56,189,248,.2); box-shadow: 0 0 16px rgba(56,189,248,.1); }
+.nav-btn.secondary {
+  border-color: var(--border); background: var(--card); color: var(--muted);
+}
+.nav-btn.secondary:hover { background: var(--border); color: var(--text); box-shadow: none; }

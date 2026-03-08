@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
+
+:root {
+  --bg:       #060a14;
+  --surface:  #0e1525;
+  --card:     #131b2e;
+  --border:   #1c2a42;
+  --accent:   #38bdf8;
+  --accent2:  #22d3ee;
+  --low:      #34d399;
+  --med:      #fbbf24;
+  --high:     #f87171;
+  --text:     #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --muted:    #8896ab;
+  --font:     'Inter', 'Segoe UI', system-ui, sans-serif;
+  --mono:     'JetBrains Mono', 'Courier New', monospace;
+  --radius:   10px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.25);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #root {
+  height: 100%; min-height: 100vh;
+  background: var(--bg); color: var(--text);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  display: flex; flex-direction: column;
+}
+
+/* ── Scrollbars ───────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(56,189,248,.2); border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(56,189,248,.4); }
+* { scrollbar-width: thin; scrollbar-color: rgba(56,189,248,.2) transparent; }
+
+/* ── Layouts ──────────────────────────────────────────────────── */
+.app-main {
+  flex: 1; min-height: 0; overflow-y: auto;
+  padding: 20px 28px; display: flex; flex-direction: column; gap: 16px;
+}
+
+/* MAP VIEW: left 50% map + right 50% (alerts + camera) */
+.map-view {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  flex: 1; min-height: 0;
+}
+.map-right-col {
+  display: flex; flex-direction: column; gap: 14px;
+  min-height: 0;
+}
+.map-right-col > * { flex: 1; min-height: 0; }
+
+/* DASHBOARD VIEW: left 50% (metrics + counters) + right 50% (suggestions + flights) */
+.dashboard-view {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  flex: 1; min-height: 0;
+}
+.dash-left {
+  display: flex; flex-direction: column; gap: 16px; min-height: 0;
+}
+.dash-right {
+  display: flex; flex-direction: column; gap: 16px; min-height: 0;
+}
+
+/* ── Shared panel ─────────────────────────────────────────────── */
+.panel {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+}
+.panel-title {
+  font-size: .82rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; color: var(--muted); margin-bottom: 6px; flex-shrink: 0;
+}
+.panel-scroll {
+  flex: 1; min-height: 0; overflow-y: auto; padding-right: 4px;
+}
+.no-data { color: var(--text-secondary); font-size: .9rem; padding: 16px 0; font-weight: 500; }
+
+/* Page transition */
+.view-enter { animation: fadeIn .25s ease; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,21 @@
+.metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.metric-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color .3s, box-shadow .3s;
+}
+.metric-card:hover { border-color: rgba(56,189,248,.2); box-shadow: 0 0 20px rgba(56,189,248,.05); }
+.metric-label {
+  font-size: .78rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .1em; color: var(--muted); margin-bottom: 10px;
+}
+.metric-value {
+  font-family: var(--mono); font-size: 2rem; font-weight: 700;
+  color: var(--accent); line-height: 1;
+}
+.metric-sub {
+  font-size: .82rem; color: var(--text-secondary); margin-top: 6px; font-weight: 500;
+}
+.metric-sub.up   { color: var(--low); }
+.metric-sub.down { color: var(--high); }

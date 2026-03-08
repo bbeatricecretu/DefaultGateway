@@ -1,0 +1,39 @@
+.timeline {
+  background: var(--surface); border-top: 1px solid var(--border);
+  padding: 10px 28px; display: flex; align-items: center; gap: 14px;
+  position: sticky; bottom: 0; z-index: 100;
+  backdrop-filter: blur(16px);
+}
+.conn-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--low);
+  animation: pulse 2s infinite; flex-shrink: 0;
+}
+.conn-dot.off { background: var(--high); animation: none; }
+@keyframes pulse { 0%,100%{ opacity:1; } 50%{ opacity:.3; } }
+.tl-label { font-size: .8rem; color: var(--muted); white-space: nowrap; font-weight: 600; }
+.tl-frames {
+  display: flex; gap: 4px; align-items: center;
+  overflow-x: auto; max-width: 50vw; padding: 2px 0;
+}
+.tl-dot {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--border); cursor: pointer;
+  border: 2px solid transparent;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .62rem; color: var(--muted); font-family: var(--mono);
+  transition: all .2s; flex-shrink: 0;
+}
+.tl-dot:hover { background: var(--card); border-color: var(--accent2); color: var(--text); }
+.tl-dot.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; box-shadow: 0 0 10px rgba(56,189,248,.25); }
+.tl-dot.visited { background: var(--card); border-color: var(--accent2); color: var(--accent2); }
+.tl-btn {
+  padding: 6px 16px; border-radius: 6px; border: 1px solid var(--border);
+  background: var(--card); color: var(--text); cursor: pointer; font-size: .85rem;
+  transition: all .15s; font-weight: 600; font-family: var(--font);
+}
+.tl-btn:hover { background: var(--border); border-color: var(--accent2); }
+.tl-btn.playing { background: rgba(56,189,248,.12); border-color: var(--accent); color: var(--accent); }
+.tl-counter {
+  font-family: var(--mono); font-size: .82rem; color: var(--muted);
+  white-space: nowrap; font-weight: 600; margin-left: auto;
+}

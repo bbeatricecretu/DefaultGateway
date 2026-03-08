@@ -1,0 +1,55 @@
+.map-panel {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+  box-shadow: var(--shadow-md);
+  display: flex; flex-direction: column;
+}
+.map-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 20px; border-bottom: 1px solid var(--border);
+  background: rgba(14,21,37,.5); flex-shrink: 0;
+}
+.map-title {
+  font-size: .82rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; color: var(--muted);
+}
+.map-hint-header {
+  font-size: .76rem; color: var(--muted); margin-left: 4px; opacity: .7;
+}
+.btn-reset-cam {
+  margin-left: auto; padding: 5px 14px; border-radius: 6px;
+  border: 1px solid var(--border); background: var(--card);
+  color: var(--text); cursor: pointer; font-size: .82rem;
+  font-weight: 600; transition: all .15s; font-family: var(--font);
+}
+.btn-reset-cam:hover { background: var(--border); border-color: var(--accent2); }
+.map-canvas-wrap {
+  flex: 1; min-height: 420px; position: relative; background: #050a14;
+}
+.map-canvas-wrap canvas { display: block; }
+.map-legend {
+  position: absolute; bottom: 12px; left: 14px;
+  display: flex; flex-direction: column; gap: 5px;
+  pointer-events: none;
+  background: rgba(6,10,20,.75); border-radius: 8px; padding: 10px 14px;
+  border: 1px solid var(--border);
+}
+/* CSS2D zone labels */
+.zone-label {
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--mono);
+  padding: 3px 10px;
+  border-radius: 5px;
+  white-space: nowrap;
+  pointer-events: auto;
+  text-shadow: 0 1px 6px rgba(0,0,0,.7);
+  letter-spacing: .04em;
+  line-height: 1;
+  user-select: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,.3);
+  transition: filter .15s, transform .15s;
+}
+.zone-label:hover { filter: brightness(1.3); transform: scale(1.05); }

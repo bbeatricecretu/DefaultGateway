@@ -381,6 +381,9 @@ def snapshot_stream() -> Response:
                 output["_snapshot_image"]  = mock_snapshot4.get_frame_image(idx)
                 output["_alerts"]          = mock_snapshot4.get_frame_alerts(idx)
                 output["_heatmaps"]        = mock_snapshot4.get_frame_heatmaps(idx)
+                # Merge ALERTS.txt optimizations as fallback
+                if not output.get("optimizations"):
+                    output["optimizations"] = mock_snapshot4.get_frame_optimizations(idx)
                 yield f"data: {json.dumps(output)}\n\n"
             except Exception as exc:
                 yield f"data: {{\"error\": \"{exc}\"}}\n\n"
@@ -628,6 +631,9 @@ def single_snapshot(index: int) -> Response:
         output["_snapshot_image"] = mock_snapshot4.get_frame_image(index)
         output["_alerts"]         = mock_snapshot4.get_frame_alerts(index)
         output["_heatmaps"]       = mock_snapshot4.get_frame_heatmaps(index)
+        # Merge ALERTS.txt optimizations as fallback
+        if not output.get("optimizations"):
+            output["optimizations"] = mock_snapshot4.get_frame_optimizations(index)
         return jsonify(output), 200
     except (RuntimeError, ValueError) as exc:
         return jsonify({"error": str(exc)}), 500

@@ -57,6 +57,7 @@ _HERE       = os.path.dirname(os.path.abspath(__file__))
 _DATA_DIR   = os.path.join(_HERE, "snapshots4#2", "snapshots4")
 _KPIS_PATH  = os.path.join(_DATA_DIR, "kpis.jsonl")
 _SCENE_PATH = os.path.join(_HERE, "message (1).txt")
+_ALERTS_PATH = os.path.join(_HERE, "ALERTS.txt")
 
 # Cameras that map to individual counters (TERMINAL is the aggregate, skip it)
 COUNTER_CAMERAS: frozenset = frozenset(
@@ -289,6 +290,103 @@ def _load_alerts() -> List[List[Dict[str, Any]]]:
     return result
 
 
+# ---------------------------------------------------------------------------
+# ALERTS.txt rich AI analysis loader
+# ---------------------------------------------------------------------------
+
+_PRIORITY_TO_SEVERITY = {"CRITICAL": "RED", "HIGH": "AMBER", "MEDIUM": "GREEN"}
+
+_ALERT_TYPE_TO_CAMERA = {
+    "security": "Security",
+    "boarding": "Departures",
+    "congestion": "Security",
+    "staffing": "Gate A",
+    "delay": "Security",
+}
+
+def _load_alerts_txt() -> List[List[Dict[str, Any]]]:
+    """
+    Load the rich AI analysis from ALERTS.txt and transform each frame's
+    ``alerts`` list into the standard frontend format::
+
+        { camera, severity, risk_score, explanation, top_action,
+          queue_pressure, flow_degradation, time_to_breach_s }
+
+    Also populates ``_ALERTS_TXT_OPTIMIZATIONS`` for use as mock optimizations.
+    """
+    global _ALERTS_TXT_OPTIMIZATIONS
+    if not os.path.exists(_ALERTS_PATH):
+        _ALERTS_TXT_OPTIMIZATIONS = []
+        return []
+    try:
+        with open(_ALERTS_PATH, "r") as fh:
+            raw = json.load(fh)
+    except Exception:
+        _ALERTS_TXT_OPTIMIZATIONS = []
+        return []
+
+    frames_alerts: List[List[Dict[str, Any]]] = []
+    frames_opts: List[List[Dict[str, Any]]] = []
+
+    for entry in raw:
+        alerts = entry.get("alerts", [])
+        frame: List[Dict[str, Any]] = []
+        for a in alerts:
+            sev = _PRIORITY_TO_SEVERITY.get(a.get("priority", ""), "GREEN")
+            cam = _ALERT_TYPE_TO_CAMERA.get(a.get("type", ""), "Security")
+            # Build risk_score from priority
+            risk_map = {"CRITICAL": 85.0, "HIGH": 60.0, "MEDIUM": 35.0}
+            risk = risk_map.get(a.get("priority", ""), 30.0)
+            # Extract supporting KPI numbers for context
+            kpis = a.get("supporting_kpis", {})
+            qp = kpis.get("security_queue_size", 0) / 25.0 if kpis.get("security_queue_size") else 0
+            fd = 0.3 if sev == "RED" else 0.15 if sev == "AMBER" else 0.0
+            ttb = 600 if sev == "RED" else 1200 if sev == "AMBER" else 0
+
+            affected = ", ".join(a.get("affected_flights", []))
+            explanation = a.get("message", "")
+            if affected:
+                explanation += f" [Flights: {affected}]"
+
+            frame.append({
+                "camera":           cam,
+                "severity":         sev,
+                "risk_score":       risk,
+                "queue_pressure":   qp,
+                "flow_degradation": fd,
+                "time_to_breach_s": ttb,
+                "top_action":       a.get("recommended_action", ""),
+                "explanation":      explanation,
+            })
+        frames_alerts.append(frame)
+
+        # Build optimizations from resource_recommendations
+        opts: List[Dict[str, Any]] = []
+        recs = entry.get("resource_recommendations", {})
+        for staff_rec in recs.get("staff_reallocation", []):
+            opts.append({
+                "action": "Reallocate Staff",
+                "details": staff_rec,
+                "estimated_impact": 25,
+                "actionable": True,
+            })
+        for lane_rec in recs.get("lane_adjustments", []):
+            opts.append({
+                "action": "Open Relief Counter",
+                "details": lane_rec,
+                "estimated_impact": 30,
+                "actionable": True,
+            })
+        frames_opts.append(opts)
+
+    _ALERTS_TXT_OPTIMIZATIONS = frames_opts
+    return frames_alerts
+
+
+_ALERTS_TXT_DATA: List[List[Dict[str, Any]]] = []  # loaded at init
+_ALERTS_TXT_OPTIMIZATIONS: List[List[Dict[str, Any]]] = []  # loaded at init
+
+
 def _load_heatmap_index() -> List[Dict[str, str]]:
     """
     Build per-frame dict mapping camera name → heatmap JPG basename.
@@ -350,6 +448,9 @@ SNAPSHOT_COUNT: int = len(_FRAMES)
 
 # AI scene analysis (crowd density, risk level, recommendations, …)
 SCENE_ANALYSIS: Dict[str, Any] = _load_scene_analysis()
+
+# Rich ALERTS.txt data (loaded after frames)
+_ALERTS_TXT_DATA = _load_alerts_txt()
 
 # Cycling index – incremented each time get_snapshot_payload() is called
 # without an explicit index argument.
@@ -497,8 +598,23 @@ def get_frame_alerts(index: int) -> List[Dict[str, Any]]:
     if override:
         return list(override["alerts"])
     if not _FRAME_ALERTS:
+        pass  # fall through to ALERTS.txt
+    else:
+        csv_alerts = _FRAME_ALERTS[idx % len(_FRAME_ALERTS)]
+        if csv_alerts:
+            return csv_alerts
+    # Fallback: cycle through ALERTS.txt entries
+    if _ALERTS_TXT_DATA:
+        return _ALERTS_TXT_DATA[idx % len(_ALERTS_TXT_DATA)]
+    return []
+
+
+def get_frame_optimizations(index: int) -> List[Dict[str, Any]]:
+    """Return mock optimizations from ALERTS.txt for the given frame index."""
+    if not _ALERTS_TXT_OPTIMIZATIONS:
         return []
-    return _FRAME_ALERTS[idx % len(_FRAME_ALERTS)]
+    idx = int(index) % len(_ALERTS_TXT_OPTIMIZATIONS)
+    return _ALERTS_TXT_OPTIMIZATIONS[idx]
 
 
 def get_frame_heatmaps(index: int) -> Dict[str, str]:
