@@ -1,210 +1,110 @@
-# AeroVision Backend
 
-Simple Python backend structure for processing AI-surveillance counter data at airport check-in.
+## System Overview
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-Backend-000000?logo=flask&logoColor=white)
+![YOLOv8](https://img.shields.io/badge/YOLOv8-Computer%20Vision-FF6F00)
+![OpenCV](https://img.shields.io/badge/OpenCV-4.x-5C3EE8?logo=opencv&logoColor=white)
+![Qwen](https://img.shields.io/badge/LLM-Qwen-FF4B4B)
+![SQLite](https://img.shields.io/badge/SQLite-Local%20DB-003B57?logo=sqlite&logoColor=white)
+![WebSockets](https://img.shields.io/badge/WebSockets-RealTime-2ECC71)
+![SSE](https://img.shields.io/badge/SSE-Streaming-3498DB)
 
-## What this project does
+**AeroVision** is an AI-powered airport operations platform developed during **HackTech Oradea 2026**, Romania’s first hackathon held inside a **real airport environment**, by a **team of 6 participants**, where the project achieved **🥉 3rd Place in Airport Infrastructure**.
 
-The system does **not** extract data from cameras or video.
-It assumes another AI system already detects and sends structured counter data like:
+The system was designed to transform real-time airport data into **actionable operational intelligence**, helping:
 
-- people in queue
-- baggage count
-- special items
-- flow rate
+- detect congestion early  
+- predict flight delays  
+- optimize counter allocation  
+- improve passenger flow  
 
-This backend takes that data and calculates:
+👉 The platform combines **computer vision, real-time processing, and AI decision-making** into a unified system.
 
-- terminal throughput
-- average clearance time
-- bottlenecks
-- flights at risk
-- counter forecasts
-- optimization suggestions
+---
 
-## Current files
+## System Architecture
 
-- [config.py](config.py) — thresholds, constants, app settings
-- [utils.py](utils.py) — helper functions for time, formatting, validation, scoring
-- [models.py](models.py) — OOP models like `Counter`, `Queue`, `Flight`, `Optimization`, `SystemMetrics`
-- [processor.py](processor.py) — validates AI payloads and updates counters
-- [scheduler.py](scheduler.py) — assigns counters to flights based on schedule windows
-- [engine.py](engine.py) — main orchestration logic
-- [main.py](main.py) — entry point with mock data / HTTP / WebSocket adapters
+### 1. Computer Vision Layer
 
-## Main attributes used
+The computer vision module processes live video streams using:
 
-### System metrics
+- YOLOv8 + OpenCV for object detection  
+- NumPy for frame processing  
 
-- `throughput`
-- `throughput_change_pct`
-- `avg_clearance_time`
-- `avg_clearance_delta`
-- `critical_bottlenecks`
-- `flights_at_risk`
-- `app_version`
-- `system_status`
-- `timestamp`
-- `live_feeds_active`
-- `action_required`
+It detects and extracts structured data such as:
 
-### Counter attributes
+- number of people in queue  
+- baggage count  
+- special items  
+- passenger flow rate  
 
-- `id`
-- `type`
-- `queue_size`
-- `flow_rate`
-- `avg_baggage`
-- `special_items`
-- `forecast`
-- `risk_level`
-- `clearance_minutes`
+This module communicates with the backend via **WebSockets** for real-time data streaming.
 
-### Flight attributes
+---
 
-- `id`
-- `status`
-- `minutes_to_departure`
-- `associated_counters`
-- `description`
-- `issue`
-- `expectation`
-- `at_risk`
+### 2. Backend Processing Layer
 
-### Optimization attributes
+The backend is built entirely in **Python using Flask**, providing:
 
-- `action`
-- `details`
-- `estimated_impact`
-- `actionable`
+- API endpoints  
+- operational dashboard  
+- real-time updates  
 
-## Logic implemented so far
+It ingests AI-generated data and combines it with:
 
-### 1. Counter processing
+- flight schedules  
+- counter assignments  
 
-Incoming AI payloads are validated first.
+The system computes:
 
-Expected counter payload shape:
+- throughput  
+- queue clearance time  
+- congestion levels  
+- flight delay risk  
 
-```python
-{
-		"03": {
-				"queue_size": 18,
-				"flow_rate": 1.2,
-				"avg_baggage": 2.8,
-				"special_items": 4,
-		}
-}
-```
+---
 
-Then each counter updates its internal state.
+### 3. AI Decision Layer
 
-### 2. Queue clearance estimate
+Processed data is analyzed using **LLMs (Qwen)** to generate:
 
-Clearance logic used:
+- operational alerts  
+- optimization suggestions  
 
-$$
-clearance\_time = \frac{queue\_size}{flow\_rate} + (special\_items \times 2\text{ min})
-$$
+Each insight follows a structured format:
 
-This is used for forecast text and risk evaluation.
+👉 **Problem – Solution – Reason**
 
-### 3. Counter risk levels
+And is assigned a risk level:
 
-- `High` if queue is above high-risk threshold
-- `Medium` if queue is above medium-risk threshold
-- `Low` otherwise
+- 🟢 Green — normal  
+- 🟠 Orange — moderate risk  
+- 🔴 Red — critical  
 
-### 4. Flight-to-counter assignment
+---
 
-Flights are no longer connected to counters manually.
+### 4. Real-Time Communication
 
-The `ScheduleManager` now assigns counters dynamically using:
+- **WebSockets** → receive live data from CV system  
+- **Server-Sent Events (SSE)** → stream updates to dashboard  
 
-- `flight_id`
-- `counter_ids`
-- `start_time`
-- `end_time`
+---
 
-If current time is inside the flight window, counters are assigned.
-If not, `associated_counters` is cleared.
+### 5. Data Storage
 
-### 5. Flight risk correlation
+- SQLite → structured system data  
+- JSON / CSV → analytics snapshots  
 
-Each flight checks the counters assigned to it.
+---
 
-If estimated counter clearance time is greater than the available boarding window, the flight becomes `at_risk`.
+## System Summary
 
-Boarding window logic used:
+AeroVision is a real-time system that:
 
-$$
-boarding\_window = minutes\_to\_departure - 30
-$$
+- ingests AI-detected crowd data  
+- analyzes passenger flow  
+- detects bottlenecks  
+- predicts flight risks  
+- suggests operational improvements  
 
-If:
-
-$$
-clearance\_time > boarding\_window
-$$
-
-then the flight is flagged as risky.
-
-### 6. Optimization rules
-
-These rules are implemented in [engine.py](engine.py):
-
-- **R1 — Reallocate Staff**  
-	If one counter queue is much larger than another, suggest moving an agent.
-
-- **R2 — Open Special Items Lane**  
-	If a counter has many special items, suggest opening a dedicated lane.
-
-- **R3 — Deploy Additional Agent**  
-	If a counter is high risk and flow rate is low, suggest adding an agent.
-
-- **R4 — Open Relief Counter**  
-	If a flight is `at_risk`, suggest opening a dedicated relief counter.
-
-## Engine flow
-
-The current pipeline in [engine.py](engine.py) is:
-
-1. Refresh schedule-based flight/counter assignments
-2. Process AI input payloads
-3. Generate flight correlations
-4. Suggest optimizations
-5. Build final output dict
-
-## Output structure
-
-The backend returns data as a dictionary / JSON-like structure:
-
-```python
-{
-		"system_metrics": {...},
-		"counters": [...],
-		"flights": [...],
-		"optimizations": [...],
-		"processing_errors": [...],
-		"schedule": {...}
-}
-```
-
-## Data source support
-
-Right now the project can run with:
-
-- mock data
-- HTTP snapshot input
-- WebSocket stream input
-
-The backend logic is the same in all cases.
-
-## Run
-
-Use:
-
-```bash
-python main.py
-```
-
-Default mode is mock mode for testing.
+👉 Turning airport monitoring into **proactive decision-making**
